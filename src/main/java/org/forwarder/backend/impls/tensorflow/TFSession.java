@@ -1,6 +1,7 @@
 package org.forwarder.backend.impls.tensorflow;
 
 import org.forwarder.Session;
+import org.forwarder.executor.Executor;
 import org.tensorflow.EagerSession;
 import org.tensorflow.Tensor;
 
@@ -26,8 +27,8 @@ public class TFSession extends Session<Tensor<?>> {
 
 	private EagerSession tfSession;
 
-	public TFSession(TFBackend backend) {
-		super(backend);
+	public TFSession(Executor<Tensor<?>> executor, TFBackend backend) {
+		super(executor, backend);
 
 		this.tfSession = this.createTFSession();
 	}

@@ -14,7 +14,7 @@ public class TFOperatorTest extends TestCase {
 	public TFOperatorTest(String testName) {
 		super(testName);
 		
-		this.session = new TFSession(null);
+		this.session = new TFSession(null, null);
 	}
 	
 	public TFSession getSession() {

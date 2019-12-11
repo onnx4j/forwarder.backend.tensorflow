@@ -1,8 +1,9 @@
 package org.forwarder.backend.impls.tensorflow;
 
 import org.forwarder.Backend;
-import org.forwarder.Model;
 import org.forwarder.Session;
+import org.forwarder.executor.Executor;
+import org.onnx4j.Model;
 import org.onnx4j.opsets.OperatorSetId;
 import org.onnx4j.tensor.Shape;
 import org.tensorflow.Tensor;
@@ -17,12 +18,12 @@ public class TFBackend extends Backend<Tensor<?>> {
 	
 	public TFBackend() { super(); }
 	
-	public TFBackend(Model model) {
-		super(model);
+	public TFBackend(Model model, Executor<Tensor<?>> executor) {
+		super(model, executor);
 	}
 	
-	public TFBackend(OperatorSetId[] opsetIds) {
-		super(opsetIds);
+	public TFBackend(OperatorSetId[] opsetIds, Executor<Tensor<?>> executor) {
+		super(opsetIds, executor);
 	}
 
 	@Override
@@ -30,7 +31,7 @@ public class TFBackend extends Backend<Tensor<?>> {
 
 	@Override
 	public Session<Tensor<?>> newSession() {
-		return new TFSession(this);
+		return new TFSession(super.getExecutor(), this);
 	}
 
 	@Override
