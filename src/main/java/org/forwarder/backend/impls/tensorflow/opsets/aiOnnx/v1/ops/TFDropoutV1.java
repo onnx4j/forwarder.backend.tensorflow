@@ -14,19 +14,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.forwarder.backend.impls.tensorflow.opsets;
+package org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.v1.ops;
 
-import org.forwarder.backend.impls.tensorflow.TFBackend;
-import org.forwarder.opset.annotations.Opset;
-import org.onnx4j.opsets.OperatorSet;
+import java.util.List;
+import java.util.Optional;
 
-@Opset(backendName = TFBackend.BACKEND_NAME)
-public abstract class TFOperatorSet extends OperatorSet {
+import org.forwarder.backend.impls.tensorflow.opsets.TFOperator;
+import org.onnx4j.opsets.aiOnnx.v1.ops.DropoutV1;
+import org.tensorflow.Tensor;
 
-	public TFOperatorSet(int irVersion, String irVersionPrerelease, String irBuildMetadata, String domain,
-			long opsetVersion, String docString) {
-		super(irVersion, irVersionPrerelease, irBuildMetadata, domain, opsetVersion, docString);
-		// TODO Auto-generated constructor stub
+public class TFDropoutV1 extends TFOperator implements DropoutV1<Tensor<?>> {
+
+	@Override
+	public List<Tensor<?>> dropout(Tensor<?> data, Boolean isTest, Float ratio, List<Long> consumedInputs) {
+		if (isTest == false)
+			throw new UnsupportedOperationException("Can not run " + DropoutV1.OP_TYPE + " in not test mode");
+		
+		return this.wrapMultiOutputs(Optional.of(data), Optional.empty());
 	}
 
 }

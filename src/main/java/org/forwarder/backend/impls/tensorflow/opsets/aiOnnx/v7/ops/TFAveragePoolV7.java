@@ -14,19 +14,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.forwarder.backend.impls.tensorflow.opsets;
+package org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.v7.ops;
 
-import org.forwarder.backend.impls.tensorflow.TFBackend;
-import org.forwarder.opset.annotations.Opset;
-import org.onnx4j.opsets.OperatorSet;
+import java.util.List;
 
-@Opset(backendName = TFBackend.BACKEND_NAME)
-public abstract class TFOperatorSet extends OperatorSet {
+import org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.v1.ops.TFAveragePoolV1;
+import org.onnx4j.opsets.aiOnnx.v7.ops.AveragePoolV7;
+import org.tensorflow.Tensor;
 
-	public TFOperatorSet(int irVersion, String irVersionPrerelease, String irBuildMetadata, String domain,
-			long opsetVersion, String docString) {
-		super(irVersion, irVersionPrerelease, irBuildMetadata, domain, opsetVersion, docString);
-		// TODO Auto-generated constructor stub
+public class TFAveragePoolV7 extends TFAveragePoolV1 implements AveragePoolV7<Tensor<?>> {
+
+	@Override
+	public Tensor<?> averagePool(Tensor<?> data, String autoPad, List<Long> kernelShape, List<Long> pads,
+			List<Long> strides, Long countIncludePad) {
+		if (countIncludePad != null && countIncludePad != 0L)
+			throw new UnsupportedOperationException(
+					String.format("[%s] Unable to handle \"countIncludePad\" is not equals to 0L", OP_TYPE));
+
+		return super.averagePool(data, autoPad, kernelShape, pads, strides);
 	}
 
 }

@@ -14,19 +14,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.forwarder.backend.impls.tensorflow.opsets;
+package org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.v6.ops;
 
-import org.forwarder.backend.impls.tensorflow.TFBackend;
-import org.forwarder.opset.annotations.Opset;
-import org.onnx4j.opsets.OperatorSet;
+import java.util.List;
 
-@Opset(backendName = TFBackend.BACKEND_NAME)
-public abstract class TFOperatorSet extends OperatorSet {
+import org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.v1.ops.TFDropoutV1;
+import org.onnx4j.opsets.aiOnnx.v6.ops.DropoutV6;
+import org.tensorflow.Tensor;
 
-	public TFOperatorSet(int irVersion, String irVersionPrerelease, String irBuildMetadata, String domain,
-			long opsetVersion, String docString) {
-		super(irVersion, irVersionPrerelease, irBuildMetadata, domain, opsetVersion, docString);
-		// TODO Auto-generated constructor stub
+public class TFDropoutV6 extends TFDropoutV1 implements DropoutV6<Tensor<?>> {
+
+	@Override
+	public List<Tensor<?>> dropout(Tensor<?> data, Boolean isTest, Float ratio) {
+		return super.dropout(data, isTest, ratio, null);
 	}
 
 }

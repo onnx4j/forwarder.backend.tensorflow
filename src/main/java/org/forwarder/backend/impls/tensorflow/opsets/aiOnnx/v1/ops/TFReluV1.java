@@ -14,19 +14,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.forwarder.backend.impls.tensorflow.opsets;
+package org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.v1.ops;
 
-import org.forwarder.backend.impls.tensorflow.TFBackend;
-import org.forwarder.opset.annotations.Opset;
-import org.onnx4j.opsets.OperatorSet;
+import java.util.List;
 
-@Opset(backendName = TFBackend.BACKEND_NAME)
-public abstract class TFOperatorSet extends OperatorSet {
+import org.forwarder.backend.impls.tensorflow.TFSession;
+import org.forwarder.backend.impls.tensorflow.opsets.TFOperator;
+import org.forwarder.backend.impls.tensorflow.utils.TensorUtil;
+import org.onnx4j.opsets.aiOnnx.v1.ops.ReluV1;
+import org.tensorflow.Tensor;
+import org.tensorflow.op.Scope;
+import org.tensorflow.op.nn.Relu;
 
-	public TFOperatorSet(int irVersion, String irVersionPrerelease, String irBuildMetadata, String domain,
-			long opsetVersion, String docString) {
-		super(irVersion, irVersionPrerelease, irBuildMetadata, domain, opsetVersion, docString);
-		// TODO Auto-generated constructor stub
+public class TFReluV1 extends TFOperator implements ReluV1<Tensor<?>> {
+
+	@Override
+	public Tensor<?> relu(Tensor<?> x, List<Long> consumed_inputs) {
+		Scope scope = new Scope(TFSession.get());
+		return Relu.create(scope, TensorUtil.toConstant(scope, x)).asOutput().tensor();
 	}
 
 }

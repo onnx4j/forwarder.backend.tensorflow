@@ -14,19 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.forwarder.backend.impls.tensorflow.opsets;
+package org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.v2;
 
-import org.forwarder.backend.impls.tensorflow.TFBackend;
-import org.forwarder.opset.annotations.Opset;
-import org.onnx4j.opsets.OperatorSet;
+import org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.v1.TFAiOnnxOperatorSetV1;
+import org.onnx4j.opsets.aiOnnx.v2.AiOnnxOperatorSetSpecV2;
+import org.tensorflow.Tensor;
 
-@Opset(backendName = TFBackend.BACKEND_NAME)
-public abstract class TFOperatorSet extends OperatorSet {
+public class TFAiOnnxOperatorSetV2 extends TFAiOnnxOperatorSetV1 implements AiOnnxOperatorSetSpecV2<Tensor<?>> {
 
-	public TFOperatorSet(int irVersion, String irVersionPrerelease, String irBuildMetadata, String domain,
+	public TFAiOnnxOperatorSetV2() {
+		this(1, "", "", 2L, "ONNX OPSET-V2 USING TENSORFLOW BACKEND");
+	}
+
+	public TFAiOnnxOperatorSetV2(int irVersion, String irVersionPrerelease, String irBuildMetadata,
 			long opsetVersion, String docString) {
-		super(irVersion, irVersionPrerelease, irBuildMetadata, domain, opsetVersion, docString);
-		// TODO Auto-generated constructor stub
+		super(irVersion, irVersionPrerelease, irBuildMetadata, opsetVersion, docString);
 	}
 
 }

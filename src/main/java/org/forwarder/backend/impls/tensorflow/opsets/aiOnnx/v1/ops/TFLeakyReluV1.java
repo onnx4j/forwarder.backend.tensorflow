@@ -14,19 +14,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.forwarder.backend.impls.tensorflow.opsets;
+package org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.v1.ops;
 
-import org.forwarder.backend.impls.tensorflow.TFBackend;
-import org.forwarder.opset.annotations.Opset;
-import org.onnx4j.opsets.OperatorSet;
+import java.util.List;
 
-@Opset(backendName = TFBackend.BACKEND_NAME)
-public abstract class TFOperatorSet extends OperatorSet {
+import org.forwarder.backend.impls.tensorflow.TFSession;
+import org.forwarder.backend.impls.tensorflow.opsets.TFOperator;
+import org.forwarder.backend.impls.tensorflow.utils.TensorUtil;
+import org.onnx4j.opsets.aiOnnx.v1.ops.LeakyReluV1;
+import org.tensorflow.Tensor;
+import org.tensorflow.op.Scope;
+import org.tensorflow.op.nn.LeakyRelu;
 
-	public TFOperatorSet(int irVersion, String irVersionPrerelease, String irBuildMetadata, String domain,
-			long opsetVersion, String docString) {
-		super(irVersion, irVersionPrerelease, irBuildMetadata, domain, opsetVersion, docString);
-		// TODO Auto-generated constructor stub
+public class TFLeakyReluV1 extends TFOperator implements LeakyReluV1<Tensor<?>> {
+
+	@Override
+	public Tensor<?> leakyRelu(Tensor<?> x, Float alpha, List<Long> consumedInputs) {
+		Scope scope = new Scope(TFSession.get());
+		return LeakyRelu.create(scope, TensorUtil.toConstant(scope, (Tensor<Number>) x), LeakyRelu.alpha(alpha))
+				.asOutput().tensor();
 	}
 
 }

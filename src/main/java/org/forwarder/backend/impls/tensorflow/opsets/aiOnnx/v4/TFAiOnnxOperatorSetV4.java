@@ -14,19 +14,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.forwarder.backend.impls.tensorflow.opsets;
+package org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.v4;
 
-import org.forwarder.backend.impls.tensorflow.TFBackend;
-import org.forwarder.opset.annotations.Opset;
-import org.onnx4j.opsets.OperatorSet;
+import org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.v3.TFAiOnnxOperatorSetV3;
+import org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.v4.ops.TFConcatV4;
+import org.onnx4j.opsets.aiOnnx.v4.AiOnnxOperatorSetSpecV4;
+import org.onnx4j.opsets.aiOnnx.v4.ops.ConcatV4;
+import org.tensorflow.Tensor;
 
-@Opset(backendName = TFBackend.BACKEND_NAME)
-public abstract class TFOperatorSet extends OperatorSet {
+public class TFAiOnnxOperatorSetV4 extends TFAiOnnxOperatorSetV3 implements AiOnnxOperatorSetSpecV4<Tensor<?>> {
 
-	public TFOperatorSet(int irVersion, String irVersionPrerelease, String irBuildMetadata, String domain,
+	@Override
+	public ConcatV4<Tensor<?>> getConcatV4() { return new TFConcatV4(); }
+
+	public TFAiOnnxOperatorSetV4() {
+		super(1, "", "", 4L, "ONNX OPSET-V4 USING TENSORFLOW BACKEND");
+	}
+
+	public TFAiOnnxOperatorSetV4(int irVersion, String irVersionPrerelease, String irBuildMetadata,
 			long opsetVersion, String docString) {
-		super(irVersion, irVersionPrerelease, irBuildMetadata, domain, opsetVersion, docString);
-		// TODO Auto-generated constructor stub
+		super(irVersion, irVersionPrerelease, irBuildMetadata, opsetVersion, docString);
 	}
 
 }

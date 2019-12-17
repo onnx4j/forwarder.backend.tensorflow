@@ -14,19 +14,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.forwarder.backend.impls.tensorflow.opsets;
+package org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.v4.ops;
 
-import org.forwarder.backend.impls.tensorflow.TFBackend;
-import org.forwarder.opset.annotations.Opset;
-import org.onnx4j.opsets.OperatorSet;
+import java.util.List;
 
-@Opset(backendName = TFBackend.BACKEND_NAME)
-public abstract class TFOperatorSet extends OperatorSet {
+import org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.v1.ops.TFConcatV1;
+import org.onnx4j.opsets.aiOnnx.v4.ops.ConcatV4;
+import org.tensorflow.Tensor;
 
-	public TFOperatorSet(int irVersion, String irVersionPrerelease, String irBuildMetadata, String domain,
-			long opsetVersion, String docString) {
-		super(irVersion, irVersionPrerelease, irBuildMetadata, domain, opsetVersion, docString);
-		// TODO Auto-generated constructor stub
+public class TFConcatV4 extends TFConcatV1 implements ConcatV4<Tensor<?>> {
+
+	@Override
+	public Tensor<?> concat(List<Tensor<?>> inputs, Long axis) {
+		return super.concat(inputs, axis);
 	}
 
 }

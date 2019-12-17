@@ -14,19 +14,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.forwarder.backend.impls.tensorflow.opsets;
+package org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.v1.ops;
 
-import org.forwarder.backend.impls.tensorflow.TFBackend;
-import org.forwarder.opset.annotations.Opset;
-import org.onnx4j.opsets.OperatorSet;
+import org.forwarder.backend.impls.tensorflow.TFSession;
+import org.forwarder.backend.impls.tensorflow.opsets.TFOperator;
+import org.forwarder.backend.impls.tensorflow.utils.TensorUtil;
+import org.onnx4j.opsets.aiOnnx.v1.ops.IdentityV1;
+import org.tensorflow.Tensor;
+import org.tensorflow.op.Scope;
+import org.tensorflow.op.core.Identity;
 
-@Opset(backendName = TFBackend.BACKEND_NAME)
-public abstract class TFOperatorSet extends OperatorSet {
+public class TFIdentityV1 extends TFOperator implements IdentityV1<Tensor<?>> {
 
-	public TFOperatorSet(int irVersion, String irVersionPrerelease, String irBuildMetadata, String domain,
-			long opsetVersion, String docString) {
-		super(irVersion, irVersionPrerelease, irBuildMetadata, domain, opsetVersion, docString);
-		// TODO Auto-generated constructor stub
+	@Override
+	public Tensor<?> identity(Tensor<?> x0) {
+		Scope scope = new Scope(TFSession.get());
+		return Identity.create(scope, TensorUtil.toConstant(scope, x0)).asOutput().tensor();
 	}
 
 }

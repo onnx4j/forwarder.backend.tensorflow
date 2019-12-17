@@ -14,19 +14,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.forwarder.backend.impls.tensorflow.opsets;
+package org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.v1.ops;
 
-import org.forwarder.backend.impls.tensorflow.TFBackend;
-import org.forwarder.opset.annotations.Opset;
-import org.onnx4j.opsets.OperatorSet;
+import org.forwarder.backend.impls.tensorflow.TFSession;
+import org.forwarder.backend.impls.tensorflow.opsets.TFOperator;
+import org.onnx4j.opsets.aiOnnx.v1.ops.ConstantV1;
+import org.tensorflow.Tensor;
 
-@Opset(backendName = TFBackend.BACKEND_NAME)
-public abstract class TFOperatorSet extends OperatorSet {
+public class TFConstantV1 extends TFOperator implements ConstantV1<Tensor<?>> {
 
-	public TFOperatorSet(int irVersion, String irVersionPrerelease, String irBuildMetadata, String domain,
-			long opsetVersion, String docString) {
-		super(irVersion, irVersionPrerelease, irBuildMetadata, domain, opsetVersion, docString);
-		// TODO Auto-generated constructor stub
+	@Override
+	public Tensor<?> constant(org.onnx4j.Tensor x0) {
+		return TFSession.getSession().getBackend().toBackendTensor(x0);
 	}
 
 }
