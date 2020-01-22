@@ -20,8 +20,10 @@ import org.forwarder.Backend;
 import org.forwarder.Session;
 import org.forwarder.executor.Executor;
 import org.onnx4j.Model;
+import org.onnx4j.TensorManager;
 import org.onnx4j.opsets.OperatorSetId;
 import org.onnx4j.tensor.Shape;
+import org.onnx4j.tensor.TensorBuilder;
 import org.tensorflow.Tensor;
 
 public class TFBackend extends Backend<Tensor<?>> {
@@ -56,29 +58,30 @@ public class TFBackend extends Backend<Tensor<?>> {
 	}
 
 	@Override
-	public Tensor<?> toBackendTensor(org.onnx4j.Tensor rawTensor) {
+	public Tensor<?> toBackendTensor(TensorManager<Tensor<?>> tensorManager, org.onnx4j.Tensor rawTensor) {
 		Tensor<?> backendTensor = Tensor.create(
 				rawTensor.getDataType().getPrototype(), 
 				rawTensor.getShape(), 
 				rawTensor.getData()
 			);
+		tensorManager.attach(rawTensor.getName(), backendTensor);
 		return backendTensor;
 	}
 
 	@Override
-	public org.onnx4j.Tensor toTensor(Tensor<?> backendTensor) {
-		org.onnx4j.Tensor rawTensor = org.onnx4j.Tensor
+	public org.onnx4j.Tensor toNativeTensor(TensorManager<org.onnx4j.Tensor> tensorManager, String name,
+			Tensor<?> backendTensor) {
+		org.onnx4j.Tensor rawTensor = TensorBuilder
 				.builder(
 					TFDataTypeConverter.toOnnx4jDataType(backendTensor.dataType()), 
 					Shape.create(backendTensor.shape()),
 					this.getModel().getTensorOptions()
 				)
+				.manager(tensorManager)
+				.name(name)
+				.docString("Created from org.tensorflow.Tensor<?> in TFBackend.toTensor()")
 				.write(b -> backendTensor.writeTo(b))
 				.build();
-		/*org.onnx4j.Tensor rawTensor = new org.onnx4j.Tensor(
-				TFDataTypeConverter.toOnnx4jDataType(backendTensor.dataType()), 
-				Shape.create(backendTensor.shape()), 
-				Memory.builder(backendTensor.numBytes()).write(b -> backendTensor.writeTo(b)).build());*/
 		return rawTensor;
 	}
 

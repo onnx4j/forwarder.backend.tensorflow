@@ -18,15 +18,25 @@ package org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.v1.ops;
 
 import org.forwarder.backend.impls.tensorflow.TFSession;
 import org.forwarder.backend.impls.tensorflow.opsets.TFOperator;
-import org.onnx4j.opsets.aiOnnx.v1.ops.ConstantV1;
+import org.forwarder.backend.impls.tensorflow.utils.TensorUtil;
+import org.onnx4j.opsets.aiOnnx.v1.ops.AbsV1;
+import org.onnx4j.opsets.aiOnnx.v1.ops.GatherV1;
+import org.tensorflow.Operand;
 import org.tensorflow.Tensor;
+import org.tensorflow.Tensors;
+import org.tensorflow.op.Scope;
+import org.tensorflow.op.core.Gather;
+import org.tensorflow.op.math.Abs;
 
-public class TFConstantV1 extends TFOperator implements ConstantV1<Tensor<?>> {
+public class TFGatherV1 extends TFOperator implements GatherV1<Tensor<?>> {
 
 	@Override
-	public Tensor<?> constant(org.onnx4j.Tensor x0) {
-		TFSession session = TFSession.getSession();
-		return session.getBackend().toBackendTensor(session.getTensorManager(), x0);
+	public Tensor<?> gather(Tensor<?> data, Tensor<?> indices, Long axis) {
+		Scope scope = new Scope(TFSession.get());
+		Operand opParams = TensorUtil.toConstant(scope, data);
+		Operand opIndices = TensorUtil.toConstant(scope, indices);
+		Operand opAxis = TensorUtil.toConstant(scope, Tensors.create(axis));
+		return Gather.create(scope, opParams, opIndices, opAxis).asOutput().tensor();
 	}
 
 }

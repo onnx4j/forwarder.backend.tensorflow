@@ -18,6 +18,7 @@ package org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.v8;
 
 import org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.v7.TFAiOnnxOperatorSetV7;
 import org.onnx4j.opsets.aiOnnx.v8.AiOnnxOperatorSetSpecV8;
+import org.onnx4j.opsets.aiOnnx.v8.ops.SumV8;
 import org.tensorflow.Tensor;
 
 public class TFAiOnnxOperatorSetV8 extends TFAiOnnxOperatorSetV7 implements AiOnnxOperatorSetSpecV8<Tensor<?>> {
@@ -29,6 +30,12 @@ public class TFAiOnnxOperatorSetV8 extends TFAiOnnxOperatorSetV7 implements AiOn
 	public TFAiOnnxOperatorSetV8(int irVersion, String irVersionPrerelease, String irBuildMetadata, long opsetVersion,
 			String docString) {
 		super(irVersion, irVersionPrerelease, irBuildMetadata, opsetVersion, docString);
+	}
+
+	@Override
+	public SumV8<Tensor<?>> getSumV8() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

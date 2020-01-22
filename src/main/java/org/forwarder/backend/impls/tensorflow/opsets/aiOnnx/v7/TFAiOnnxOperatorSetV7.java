@@ -24,6 +24,7 @@ import org.onnx4j.opsets.aiOnnx.v7.AiOnnxOperatorSetSpecV7;
 import org.onnx4j.opsets.aiOnnx.v7.ops.AveragePoolV7;
 import org.onnx4j.opsets.aiOnnx.v7.ops.BatchNormalizationV7;
 import org.onnx4j.opsets.aiOnnx.v7.ops.DropoutV7;
+import org.onnx4j.opsets.aiOnnx.v7.ops.SubV7;
 import org.tensorflow.Tensor;
 
 public class TFAiOnnxOperatorSetV7 extends TFAiOnnxOperatorSetV6 implements AiOnnxOperatorSetSpecV7<Tensor<?>> {
@@ -44,6 +45,12 @@ public class TFAiOnnxOperatorSetV7 extends TFAiOnnxOperatorSetV6 implements AiOn
 	public TFAiOnnxOperatorSetV7(int irVersion, String irVersionPrerelease, String irBuildMetadata,
 			long opsetVersion, String docString) {
 		super(irVersion, irVersionPrerelease, irBuildMetadata, opsetVersion, docString);
+	}
+
+	@Override
+	public SubV7<Tensor<?>> getSubV7() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

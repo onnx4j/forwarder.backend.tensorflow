@@ -16,7 +16,6 @@
  */
 package org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.v1;
 
-import org.forwarder.backend.impls.tensorflow.TFBackend;
 import org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.TFAiOnnxOperatorSet;
 import org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.v1.ops.TFAbsV1;
 import org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.v1.ops.TFAddV1;
@@ -37,7 +36,7 @@ import org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.v1.ops.TFMulV1;
 import org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.v1.ops.TFPadV1;
 import org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.v1.ops.TFReluV1;
 import org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.v1.ops.TFReshapeV1;
-import org.forwarder.opset.annotations.Opset;
+import org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.v1.ops.TFTransposeV1;
 import org.onnx4j.opsets.aiOnnx.v1.AiOnnxOperatorSetSpecV1;
 import org.onnx4j.opsets.aiOnnx.v1.ops.AbsV1;
 import org.onnx4j.opsets.aiOnnx.v1.ops.AddV1;
@@ -50,6 +49,7 @@ import org.onnx4j.opsets.aiOnnx.v1.ops.ConstantV1;
 import org.onnx4j.opsets.aiOnnx.v1.ops.ConvV1;
 import org.onnx4j.opsets.aiOnnx.v1.ops.DivV1;
 import org.onnx4j.opsets.aiOnnx.v1.ops.DropoutV1;
+import org.onnx4j.opsets.aiOnnx.v1.ops.GatherV1;
 import org.onnx4j.opsets.aiOnnx.v1.ops.IdentityV1;
 import org.onnx4j.opsets.aiOnnx.v1.ops.ImageScalerV1;
 import org.onnx4j.opsets.aiOnnx.v1.ops.LeakyReluV1;
@@ -57,11 +57,18 @@ import org.onnx4j.opsets.aiOnnx.v1.ops.MatMulV1;
 import org.onnx4j.opsets.aiOnnx.v1.ops.MaxPoolV1;
 import org.onnx4j.opsets.aiOnnx.v1.ops.MulV1;
 import org.onnx4j.opsets.aiOnnx.v1.ops.PadV1;
+import org.onnx4j.opsets.aiOnnx.v1.ops.ReduceMaxV1;
 import org.onnx4j.opsets.aiOnnx.v1.ops.ReluV1;
 import org.onnx4j.opsets.aiOnnx.v1.ops.ReshapeV1;
+import org.onnx4j.opsets.aiOnnx.v1.ops.SigmoidV1;
+import org.onnx4j.opsets.aiOnnx.v1.ops.SoftmaxV1;
+import org.onnx4j.opsets.aiOnnx.v1.ops.SqueezeV1;
+import org.onnx4j.opsets.aiOnnx.v1.ops.SubV1;
+import org.onnx4j.opsets.aiOnnx.v1.ops.SumV1;
+import org.onnx4j.opsets.aiOnnx.v1.ops.TransposeV1;
+import org.onnx4j.opsets.aiOnnx.v1.ops.UnsqueezeV1;
 import org.tensorflow.Tensor;
 
-@Opset(backendName = TFBackend.BACKEND_NAME)
 public class TFAiOnnxOperatorSetV1 extends TFAiOnnxOperatorSet implements AiOnnxOperatorSetSpecV1<Tensor<?>> {
 
 	@Override
@@ -124,6 +131,9 @@ public class TFAiOnnxOperatorSetV1 extends TFAiOnnxOperatorSet implements AiOnnx
 	@Override
 	public CastV1<Tensor<?>> getCastV1() { return null; }
 
+	@Override
+	public GatherV1<Tensor<?>> getGatherV1() { return null; }
+
 	public TFAiOnnxOperatorSetV1() {
 		this(1, "", "", 1L, "ONNX OPSET-V1 USING TENSORFLOW BACKEND");
 	}
@@ -132,5 +142,50 @@ public class TFAiOnnxOperatorSetV1 extends TFAiOnnxOperatorSet implements AiOnnx
 			long opsetVersion, String docString) {
 		super(irVersion, irVersionPrerelease, irBuildMetadata, opsetVersion, docString);
 	}
+
+	@Override
+	public SubV1<Tensor<?>> getSubV1() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public SumV1<Tensor<?>> getSumV1() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public SigmoidV1<Tensor<?>> getSigmoidV1() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public SoftmaxV1<Tensor<?>> getSoftmaxV1() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public SqueezeV1<Tensor<?>> getSqueezeV1() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public UnsqueezeV1<Tensor<?>> getUnsqueezeV1() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ReduceMaxV1<Tensor<?>> getReduceMaxV1() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public TransposeV1<Tensor<?>> getTransposeV1() { return new TFTransposeV1(); }
 
 }

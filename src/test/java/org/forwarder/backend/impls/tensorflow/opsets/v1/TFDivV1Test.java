@@ -22,23 +22,14 @@ import org.forwarder.backend.impls.tensorflow.PerformanceTracker;
 import org.forwarder.backend.impls.tensorflow.opsets.TFOperatorTest;
 import org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.v1.ops.TFDivV1;
 import org.forwarder.backend.impls.tensorflow.utils.TensorUtil;
+import org.junit.Test;
 import org.tensorflow.Tensor;
-
-import junit.framework.Test;
-import junit.framework.TestSuite;
 
 public class TFDivV1Test extends TFOperatorTest {
 
 	private static Logger logger = Logger.getGlobal();
 
-	public TFDivV1Test(String testName) {
-		super(testName);
-	}
-
-	public static Test suite() {
-		return new TestSuite(TFDivV1Test.class);
-	}
-
+	@Test
 	public void testDivV1() {
 		Tensor<Float> tensorA = TensorUtil.create(new Float[] { 0f, 1f, 2f, 3f, 4f, 5f, 6f, 7f, 8f, 9f, 10f, 11f }, 4,
 				3);

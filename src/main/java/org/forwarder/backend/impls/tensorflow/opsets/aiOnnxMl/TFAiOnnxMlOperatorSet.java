@@ -16,8 +16,11 @@
  */
 package org.forwarder.backend.impls.tensorflow.opsets.aiOnnxMl;
 
+import org.forwarder.backend.impls.tensorflow.TFBackend;
+import org.forwarder.opset.annotations.Opset;
 import org.onnx4j.opsets.aiOnnxMl.AiOnnxMlOperatorSet;
 
+@Opset(backendName = TFBackend.BACKEND_NAME)
 public abstract class TFAiOnnxMlOperatorSet extends AiOnnxMlOperatorSet {
 
 	public TFAiOnnxMlOperatorSet(int irVersion, String irVersionPrerelease, String irBuildMetadata, long opsetVersion,

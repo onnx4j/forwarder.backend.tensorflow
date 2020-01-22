@@ -50,7 +50,7 @@ public class TFSession extends Session<Tensor<?>> {
 	}
 	
 	@Override
-	public void close() {
+	public void close() throws Exception {
 		super.close();
 		this.disposeTFSession();
 	}

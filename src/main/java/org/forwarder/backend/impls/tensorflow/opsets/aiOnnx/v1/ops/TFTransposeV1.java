@@ -16,17 +16,37 @@
  */
 package org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.v1.ops;
 
+import java.util.List;
+
 import org.forwarder.backend.impls.tensorflow.TFSession;
 import org.forwarder.backend.impls.tensorflow.opsets.TFOperator;
-import org.onnx4j.opsets.aiOnnx.v1.ops.ConstantV1;
+import org.forwarder.backend.impls.tensorflow.utils.TensorUtil;
+import org.onnx4j.opsets.aiOnnx.v1.ops.TransposeV1;
 import org.tensorflow.Tensor;
+import org.tensorflow.op.Scope;
+import org.tensorflow.op.core.Constant;
+import org.tensorflow.op.linalg.Transpose;
 
-public class TFConstantV1 extends TFOperator implements ConstantV1<Tensor<?>> {
+import com.google.common.primitives.Longs;
+
+public class TFTransposeV1 extends TFOperator implements TransposeV1<Tensor<?>> {
 
 	@Override
-	public Tensor<?> constant(org.onnx4j.Tensor x0) {
-		TFSession session = TFSession.getSession();
-		return session.getBackend().toBackendTensor(session.getTensorManager(), x0);
+	public OperatorStatus getStatus() {
+		return OperatorStatus.STABLE;
+	}
+
+	@Override
+	public Tensor<?> transpose(Tensor<?> data, List<Long> perm) {
+		Scope scope = new Scope(TFSession.get());
+		return Transpose
+			.create(
+				scope, 
+				TensorUtil.toConstant(scope, data), 
+				Constant.create(scope, Longs.toArray(perm))
+			)
+			.asOutput()
+			.tensor();
 	}
 
 }

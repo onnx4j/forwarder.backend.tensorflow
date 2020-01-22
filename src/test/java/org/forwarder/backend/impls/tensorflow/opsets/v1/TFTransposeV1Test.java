@@ -16,45 +16,41 @@
  */
 package org.forwarder.backend.impls.tensorflow.opsets.v1;
 
+import static org.junit.Assert.assertArrayEquals;
+
+import java.nio.DoubleBuffer;
+import java.util.Collections;
+import java.util.List;
 import java.util.logging.Logger;
 
 import org.forwarder.backend.impls.tensorflow.PerformanceTracker;
 import org.forwarder.backend.impls.tensorflow.opsets.TFOperatorTest;
-import org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.v1.ops.TFMaxPoolV1;
-import org.forwarder.backend.impls.tensorflow.utils.TensorUtil;
+import org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.v1.ops.TFTransposeV1;
 import org.junit.Test;
 import org.tensorflow.Tensor;
 
-public class TFMaxPoolV1Test extends TFOperatorTest {
+import com.google.common.collect.Lists;
+import com.google.common.primitives.Longs;
+
+public class TFTransposeV1Test extends TFOperatorTest {
 
 	private static Logger logger = Logger.getGlobal();
 
 	@Test
-	public void testMaxPoolV1() {
-//		Float[][][][] 4dArray = new Float[] {
-//				[
-//				    [[1.0, 2.0, 3.0, 4.0],
-//				     [5.0, 6.0, 7.0, 8.0],
-//				     [8.0, 7.0, 6.0, 5.0],
-//				     [4.0, 3.0, 2.0, 1.0]],
-//				    [[4.0, 3.0, 2.0, 1.0],
-//				     [8.0, 7.0, 6.0, 5.0],
-//				     [1.0, 2.0, 3.0, 4.0],
-//				     [5.0, 6.0, 7.0, 8.0]]
-//				]
-//		}
-		
-		Tensor<Float> tensorA = TensorUtil.create(new Float[] { 0f, 1f, 2f, 3f, 4f, 5f, 6f, 7f, 8f, 9f, 10f, 11f }, 4,
-				3);
-		Tensor<Float> tensorB = TensorUtil.create(new Float[] { 1f, 2f, 3f }, 1, 3);
-		
-		TFMaxPoolV1 operator = new TFMaxPoolV1();
+	public void test1() throws Exception {
+		this.testTranspose(
+				new long[] { 2, 1, 3}, 
+				Tensor.create(new long[] {1, 2, 3},  DoubleBuffer.allocate(1*2*3)), 
+				Collections.unmodifiableList(Longs.asList(1, 0, 2))
+			);
+	}
 
+	public void testTranspose(long[] excepted, Tensor<?> data, List<Long> perm) {
+		TFTransposeV1 operator = new TFTransposeV1();
 		PerformanceTracker tracker = PerformanceTracker.start();
-		Tensor<?> tensorC = null;//operator.maxpool(tensorA, tensorB, null, 0L, null);
+		Tensor<?> y = operator.transpose(data, Lists.newArrayList(1L, 0L, 2L));
 		logger.info(String.format("Total time: %sms", String.valueOf(tracker.stop())));
-
-		//logger.info(DumpUtil.dump(TensorUtil.copyOut(tensorC).asFloatBuffer(), tensorC.shape()));
+		assertArrayEquals(excepted, y.shape());
 	}
 
 }

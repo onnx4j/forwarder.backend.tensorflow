@@ -18,18 +18,14 @@ package org.forwarder.backend.impls.tensorflow.opsets;
 
 import org.forwarder.backend.impls.tensorflow.TFSession;
 
-import junit.framework.TestCase;
-
 /**
  * Unit test for some performance tests.
  */
-public class TFOperatorTest extends TestCase {
+public abstract class TFOperatorTest {
 	
 	private TFSession session;
 
-	public TFOperatorTest(String testName) {
-		super(testName);
-		
+	public TFOperatorTest() {
 		this.session = new TFSession(null, null);
 	}
 	

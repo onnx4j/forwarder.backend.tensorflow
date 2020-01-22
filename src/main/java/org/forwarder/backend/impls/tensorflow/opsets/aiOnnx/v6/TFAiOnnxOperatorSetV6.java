@@ -23,6 +23,9 @@ import org.onnx4j.opsets.aiOnnx.v6.AiOnnxOperatorSetSpecV6;
 import org.onnx4j.opsets.aiOnnx.v6.ops.CastV6;
 import org.onnx4j.opsets.aiOnnx.v6.ops.DropoutV6;
 import org.onnx4j.opsets.aiOnnx.v6.ops.MulV6;
+import org.onnx4j.opsets.aiOnnx.v6.ops.SigmoidV6;
+import org.onnx4j.opsets.aiOnnx.v6.ops.SubV6;
+import org.onnx4j.opsets.aiOnnx.v6.ops.SumV6;
 import org.tensorflow.Tensor;
 
 public class TFAiOnnxOperatorSetV6 extends TFAiOnnxOperatorSetV5 implements AiOnnxOperatorSetSpecV6<Tensor<?>> {
@@ -47,6 +50,24 @@ public class TFAiOnnxOperatorSetV6 extends TFAiOnnxOperatorSetV5 implements AiOn
 	public TFAiOnnxOperatorSetV6(int irVersion, String irVersionPrerelease, String irBuildMetadata, long opsetVersion,
 			String docString) {
 		super(irVersion, irVersionPrerelease, irBuildMetadata, opsetVersion, docString);
+	}
+
+	@Override
+	public SubV6<Tensor<?>> getSubV6() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public SumV6<Tensor<?>> getSumV6() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public SigmoidV6<Tensor<?>> getSigmoidV6() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
