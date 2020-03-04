@@ -18,26 +18,31 @@ package org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.v1.ops;
 
 import java.util.List;
 
+import org.forwarder.backend.impls.tensorflow.TFOps;
 import org.forwarder.backend.impls.tensorflow.TFSession;
 import org.forwarder.backend.impls.tensorflow.opsets.TFOperator;
-import org.forwarder.backend.impls.tensorflow.utils.TensorUtil;
-import org.onnx4j.opsets.aiOnnx.v1.ops.ReshapeV1;
+import org.onnx4j.Inputs;
+import org.onnx4j.model.graph.Node;
+import org.onnx4j.opsets.domain.aiOnnx.v1.ops.ReshapeV1;
+import org.onnx4j.opsets.operator.OperatorOutputs;
 import org.tensorflow.Tensor;
-import org.tensorflow.op.Scope;
-import org.tensorflow.op.core.Constant;
-import org.tensorflow.op.core.Reshape;
 
 import com.google.common.primitives.Longs;
 
-public class TFReshapeV1 extends TFOperator implements ReshapeV1<Tensor<?>> {
+public class TFReshapeV1 extends TFOperator<Tensor<? extends Number>> implements ReshapeV1 {
 
 	@Override
-	public Tensor<?> reshape(Tensor<?> a, List<Long> shape, List<Long> consumedInputs) {
-		Scope scope = new Scope(TFSession.get());
-		return Reshape.create(scope, 
-				TensorUtil.toConstant(scope, a), 
-				Constant.create(scope, Longs.toArray(shape))
-				).asOutput().tensor();
+	public OperatorOutputs<Tensor<? extends Number>> forward(Node node, Inputs inputs) {
+		ReshapeInputsV1<Tensor<? extends Number>> castedOperatorInputs = new ReshapeInputsV1<Tensor<? extends Number>>(node, inputs);
+		Tensor<? extends Number> data = castedOperatorInputs.getData();
+		List<Long> shape = castedOperatorInputs.getShape();
+		List<Long> consumedInputs = castedOperatorInputs.getConsumedInputs();
+		return new ReshapeOutputV1<Tensor<? extends Number>>(this.reshape(data, shape, consumedInputs));
+	}
+
+	protected Tensor<? extends Number> reshape(Tensor<? extends Number> a, List<Long> shape, List<Long> consumedInputs) {
+		TFOps tfOps = TFSession.getOps();
+		return tfOps.ops().reshape(tfOps.constant(a), tfOps.ops().constant(Longs.toArray(shape))).asOutput().tensor();
 	}
 
 }

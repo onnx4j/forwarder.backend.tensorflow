@@ -20,35 +20,40 @@ import org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.v6.TFAiOnnxOperatorS
 import org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.v7.ops.TFAveragePoolV7;
 import org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.v7.ops.TFBatchNormalizationV7;
 import org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.v7.ops.TFDropoutV7;
-import org.onnx4j.opsets.aiOnnx.v7.AiOnnxOperatorSetSpecV7;
-import org.onnx4j.opsets.aiOnnx.v7.ops.AveragePoolV7;
-import org.onnx4j.opsets.aiOnnx.v7.ops.BatchNormalizationV7;
-import org.onnx4j.opsets.aiOnnx.v7.ops.DropoutV7;
-import org.onnx4j.opsets.aiOnnx.v7.ops.SubV7;
-import org.tensorflow.Tensor;
+import org.onnx4j.opsets.domain.aiOnnx.v7.AiOnnxOperatorSetInitializerV7;
+import org.onnx4j.opsets.domain.aiOnnx.v7.ops.AveragePoolV7;
+import org.onnx4j.opsets.domain.aiOnnx.v7.ops.BatchNormalizationV7;
+import org.onnx4j.opsets.domain.aiOnnx.v7.ops.DropoutV7;
+import org.onnx4j.opsets.domain.aiOnnx.v7.ops.SubV7;
 
-public class TFAiOnnxOperatorSetV7 extends TFAiOnnxOperatorSetV6 implements AiOnnxOperatorSetSpecV7<Tensor<?>> {
-
-	@Override
-	public BatchNormalizationV7<Tensor<?>> getBatchNormalizationV7() { return new TFBatchNormalizationV7(); }
-
-	@Override
-	public AveragePoolV7<Tensor<?>> getAveragePoolV7() { return new TFAveragePoolV7(); }
-
-	@Override
-	public DropoutV7<Tensor<?>> getDropoutV7() { return new TFDropoutV7(); }
+public class TFAiOnnxOperatorSetV7 extends TFAiOnnxOperatorSetV6 implements AiOnnxOperatorSetInitializerV7 {
 
 	public TFAiOnnxOperatorSetV7() {
 		super(1, "", "", 7L, "ONNX OPSET-V7 USING TENSORFLOW BACKEND");
 	}
 
-	public TFAiOnnxOperatorSetV7(int irVersion, String irVersionPrerelease, String irBuildMetadata,
-			long opsetVersion, String docString) {
+	public TFAiOnnxOperatorSetV7(int irVersion, String irVersionPrerelease, String irBuildMetadata, long opsetVersion,
+			String docString) {
 		super(irVersion, irVersionPrerelease, irBuildMetadata, opsetVersion, docString);
 	}
 
 	@Override
-	public SubV7<Tensor<?>> getSubV7() {
+	public BatchNormalizationV7 getBatchNormalizationV7() {
+		return new TFBatchNormalizationV7();
+	}
+
+	@Override
+	public AveragePoolV7 getAveragePoolV7() {
+		return new TFAveragePoolV7();
+	}
+
+	@Override
+	public DropoutV7 getDropoutV7() {
+		return new TFDropoutV7();
+	}
+
+	@Override
+	public SubV7 getSubV7() {
 		// TODO Auto-generated method stub
 		return null;
 	}

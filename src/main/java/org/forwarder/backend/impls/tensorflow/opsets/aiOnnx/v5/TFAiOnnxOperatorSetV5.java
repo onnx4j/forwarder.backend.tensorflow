@@ -18,14 +18,13 @@ package org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.v5;
 
 import org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.v4.TFAiOnnxOperatorSetV4;
 import org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.v5.ops.TFReshapeV5;
-import org.onnx4j.opsets.aiOnnx.v5.AiOnnxOperatorSetSpecV5;
-import org.onnx4j.opsets.aiOnnx.v5.ops.ReshapeV5;
-import org.tensorflow.Tensor;
+import org.onnx4j.opsets.domain.aiOnnx.v5.AiOnnxOpsetInitializerV5;
+import org.onnx4j.opsets.domain.aiOnnx.v5.ops.ReshapeV5;
 
-public class TFAiOnnxOperatorSetV5 extends TFAiOnnxOperatorSetV4 implements AiOnnxOperatorSetSpecV5<Tensor<?>> {
+public class TFAiOnnxOperatorSetV5 extends TFAiOnnxOperatorSetV4 implements AiOnnxOpsetInitializerV5 {
 
 	@Override
-	public ReshapeV5<Tensor<?>> getReshapeV5() { return new TFReshapeV5(); }
+	public ReshapeV5 getReshapeV5() { return new TFReshapeV5(); }
 
 	public TFAiOnnxOperatorSetV5() {
 		super(1, "", "", 5L, "ONNX OPSET-V5 USING TENSORFLOW BACKEND");

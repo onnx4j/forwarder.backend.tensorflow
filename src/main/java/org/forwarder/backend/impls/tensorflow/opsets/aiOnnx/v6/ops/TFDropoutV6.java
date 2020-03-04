@@ -16,17 +16,22 @@
  */
 package org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.v6.ops;
 
-import java.util.List;
-
 import org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.v1.ops.TFDropoutV1;
-import org.onnx4j.opsets.aiOnnx.v6.ops.DropoutV6;
+import org.onnx4j.Inputs;
+import org.onnx4j.model.graph.Node;
+import org.onnx4j.opsets.domain.aiOnnx.v6.ops.DropoutV6;
+import org.onnx4j.opsets.operator.OperatorOutputs;
 import org.tensorflow.Tensor;
 
-public class TFDropoutV6 extends TFDropoutV1 implements DropoutV6<Tensor<?>> {
+public class TFDropoutV6 extends TFDropoutV1 implements DropoutV6 {
 
 	@Override
-	public List<Tensor<?>> dropout(Tensor<?> data, Boolean isTest, Float ratio) {
-		return super.dropout(data, isTest, ratio, null);
+	public OperatorOutputs<Tensor<Number>> forward(Node node, Inputs inputs) {
+		DropoutInputsV6<Tensor<Number>> castedOperatorInputs = new DropoutInputsV6<Tensor<Number>>(node, inputs);
+		Tensor<Number> data = castedOperatorInputs.getData();
+		Boolean isTest = castedOperatorInputs.isTest();
+		Float ratio = castedOperatorInputs.getRatio();
+		return new DropoutOutputV6<Tensor<Number>>(super.dropout(data, isTest, ratio, null));
 	}
 
 }

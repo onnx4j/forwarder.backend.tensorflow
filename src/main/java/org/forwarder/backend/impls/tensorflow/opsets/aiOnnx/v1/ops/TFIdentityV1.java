@@ -16,20 +16,27 @@
  */
 package org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.v1.ops;
 
+import org.forwarder.backend.impls.tensorflow.TFOps;
 import org.forwarder.backend.impls.tensorflow.TFSession;
-import org.forwarder.backend.impls.tensorflow.opsets.TFOperator;
-import org.forwarder.backend.impls.tensorflow.utils.TensorUtil;
-import org.onnx4j.opsets.aiOnnx.v1.ops.IdentityV1;
+import org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.TFAiOnnxOperator;
+import org.onnx4j.Inputs;
+import org.onnx4j.model.graph.Node;
+import org.onnx4j.opsets.domain.aiOnnx.v1.ops.IdentityV1;
+import org.onnx4j.opsets.operator.OperatorOutputs;
 import org.tensorflow.Tensor;
-import org.tensorflow.op.Scope;
-import org.tensorflow.op.core.Identity;
 
-public class TFIdentityV1 extends TFOperator implements IdentityV1<Tensor<?>> {
+public class TFIdentityV1 extends TFAiOnnxOperator<Tensor<?>> implements IdentityV1 {
 
 	@Override
-	public Tensor<?> identity(Tensor<?> x0) {
-		Scope scope = new Scope(TFSession.get());
-		return Identity.create(scope, TensorUtil.toConstant(scope, x0)).asOutput().tensor();
+	public OperatorOutputs<Tensor<?>> forward(Node node, Inputs inputs) {
+		IdentityInputsV1<Tensor<?>> castedOperatorInputs = new IdentityInputsV1<Tensor<?>>(node, inputs);
+		Tensor<?> input = castedOperatorInputs.getInput();
+		return new IdentityOutputV1<Tensor<?>>(this.identity(input));
+	}
+
+	protected Tensor<?> identity(Tensor<?> x0) {
+		TFOps tfOps = TFSession.getOps();
+		return tfOps.ops().identity(tfOps.constant(x0)).asOutput().tensor();
 	}
 
 }

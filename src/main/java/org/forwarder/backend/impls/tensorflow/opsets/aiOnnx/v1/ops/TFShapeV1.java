@@ -16,15 +16,27 @@
  */
 package org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.v1.ops;
 
+import org.forwarder.backend.impls.tensorflow.TFOps;
+import org.forwarder.backend.impls.tensorflow.TFSession;
 import org.forwarder.backend.impls.tensorflow.opsets.TFOperator;
-import org.onnx4j.opsets.aiOnnx.v1.ops.PadV1;
+import org.onnx4j.Inputs;
+import org.onnx4j.model.graph.Node;
+import org.onnx4j.opsets.domain.aiOnnx.v1.ops.ShapeV1;
+import org.onnx4j.opsets.operator.OperatorOutputs;
 import org.tensorflow.Tensor;
 
-public class TFPadV1 extends TFOperator implements PadV1<Tensor<?>> {
+public class TFShapeV1 extends TFOperator<Tensor<Long>> implements ShapeV1 {
 
 	@Override
-	public Tensor<?> pad(Tensor<?> x) {
-		return null;
+	public OperatorOutputs<Tensor<Long>> forward(Node node, Inputs inputs) {
+		ShapeInputsV1<Tensor<Long>> castedOperatorInputs = new ShapeInputsV1<Tensor<Long>>(node, inputs);
+		Tensor<Long> data = castedOperatorInputs.getData();
+		return new ShapeOutputV1<Tensor<Long>>(this.shape(data));
+	}
+	
+	public Tensor<Long> shape(Tensor<?> data) {
+		TFOps tfOps = TFSession.getOps();
+		return tfOps.ops().shape(tfOps.constant(data), Long.class).asOutput().tensor();
 	}
 
 }

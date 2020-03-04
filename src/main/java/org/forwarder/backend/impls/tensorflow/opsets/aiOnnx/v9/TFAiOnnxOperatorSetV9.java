@@ -17,11 +17,10 @@
 package org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.v9;
 
 import org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.v8.TFAiOnnxOperatorSetV8;
-import org.onnx4j.opsets.aiOnnx.v9.AiOnnxOperatorSetSpecV9;
-import org.onnx4j.opsets.aiOnnx.v9.ops.CastV9;
-import org.tensorflow.Tensor;
+import org.onnx4j.opsets.domain.aiOnnx.v9.AiOnnxOpsetInitializerV9;
+import org.onnx4j.opsets.domain.aiOnnx.v9.ops.CastV9;
 
-public class TFAiOnnxOperatorSetV9 extends TFAiOnnxOperatorSetV8 implements AiOnnxOperatorSetSpecV9<Tensor<?>> {
+public class TFAiOnnxOperatorSetV9 extends TFAiOnnxOperatorSetV8 implements AiOnnxOpsetInitializerV9 {
 
 	public TFAiOnnxOperatorSetV9() {
 		super(1, "", "", 9L, "ONNX OPSET-V9 USING TENSORFLOW BACKEND");
@@ -33,7 +32,7 @@ public class TFAiOnnxOperatorSetV9 extends TFAiOnnxOperatorSetV8 implements AiOn
 	}
 
 	@Override
-	public CastV9<Tensor<?>> getCastV9() {
+	public CastV9 getCastV9() {
 		// TODO Auto-generated method stub
 		return null;
 	}

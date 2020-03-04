@@ -18,18 +18,18 @@ package org.forwarder.backend.impls.tensorflow.opsets.v1;
 
 import static org.junit.Assert.assertArrayEquals;
 
-import java.nio.DoubleBuffer;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
-import org.forwarder.backend.impls.tensorflow.PerformanceTracker;
 import org.forwarder.backend.impls.tensorflow.opsets.TFOperatorTest;
 import org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.v1.ops.TFTransposeV1;
 import org.junit.Test;
 import org.tensorflow.Tensor;
+import org.tensorflow.Tensors;
 
-import com.google.common.collect.Lists;
+import com.google.common.base.Stopwatch;
 import com.google.common.primitives.Longs;
 
 public class TFTransposeV1Test extends TFOperatorTest {
@@ -38,18 +38,21 @@ public class TFTransposeV1Test extends TFOperatorTest {
 
 	@Test
 	public void test1() throws Exception {
-		this.testTranspose(
-				new long[] { 2, 1, 3}, 
-				Tensor.create(new long[] {1, 2, 3},  DoubleBuffer.allocate(1*2*3)), 
-				Collections.unmodifiableList(Longs.asList(1, 0, 2))
-			);
+		this.testTranspose(new long[] { 2, 1, 3 }, Tensors.create(new long[] { 1, 2, 3 }),
+				Collections.unmodifiableList(Longs.asList(1, 0, 2)));
 	}
 
-	public void testTranspose(long[] excepted, Tensor<?> data, List<Long> perm) {
-		TFTransposeV1 operator = new TFTransposeV1();
-		PerformanceTracker tracker = PerformanceTracker.start();
-		Tensor<?> y = operator.transpose(data, Lists.newArrayList(1L, 0L, 2L));
-		logger.info(String.format("Total time: %sms", String.valueOf(tracker.stop())));
+	public void testTranspose(long[] excepted, Tensor<? extends Number> data, List<Long> perm) {
+		Stopwatch watch = Stopwatch.createStarted();
+		Tensor<? extends Number> y = new TFTransposeV1() {
+
+			@Override
+			public Tensor<? extends Number> transpose(Tensor<? extends Number> data, List<Long> perm) {
+				return super.transpose(data, perm);
+			}
+
+		}.transpose(data, perm);
+		logger.info(String.format("Total time: %sms", String.valueOf(watch.elapsed(TimeUnit.MILLISECONDS))));
 		assertArrayEquals(excepted, y.shape());
 	}
 

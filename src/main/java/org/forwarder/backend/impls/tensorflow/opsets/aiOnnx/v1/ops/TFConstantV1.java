@@ -17,14 +17,23 @@
 package org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.v1.ops;
 
 import org.forwarder.backend.impls.tensorflow.TFSession;
-import org.forwarder.backend.impls.tensorflow.opsets.TFOperator;
-import org.onnx4j.opsets.aiOnnx.v1.ops.ConstantV1;
+import org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.TFAiOnnxOperator;
+import org.onnx4j.Inputs;
+import org.onnx4j.model.graph.Node;
+import org.onnx4j.opsets.domain.aiOnnx.v1.ops.ConstantV1;
+import org.onnx4j.opsets.operator.OperatorOutputs;
 import org.tensorflow.Tensor;
 
-public class TFConstantV1 extends TFOperator implements ConstantV1<Tensor<?>> {
+public class TFConstantV1 extends TFAiOnnxOperator<Tensor<?>> implements ConstantV1 {
 
 	@Override
-	public Tensor<?> constant(org.onnx4j.Tensor x0) {
+	public OperatorOutputs<Tensor<?>> forward(Node node, Inputs inputs) {
+		ConstantInputsV1<Tensor<Object>> castedOperatorInputs = new ConstantInputsV1<Tensor<Object>>(node, inputs);
+		org.onnx4j.Tensor value = castedOperatorInputs.getValue();
+		return new ConstantOutputV1<Tensor<?>>(this.constant(value));
+	}
+
+	protected Tensor<?> constant(org.onnx4j.Tensor x0) {
 		TFSession session = TFSession.getSession();
 		return session.getBackend().toBackendTensor(session.getTensorManager(), x0);
 	}

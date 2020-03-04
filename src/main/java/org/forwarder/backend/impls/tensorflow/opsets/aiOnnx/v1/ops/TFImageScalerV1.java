@@ -18,27 +18,43 @@ package org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.v1.ops;
 
 import java.util.List;
 
+import org.forwarder.backend.impls.tensorflow.TFOps;
 import org.forwarder.backend.impls.tensorflow.TFSession;
-import org.forwarder.backend.impls.tensorflow.opsets.TFOperator;
-import org.forwarder.backend.impls.tensorflow.utils.TensorUtil;
-import org.onnx4j.opsets.aiOnnx.v1.ops.ImageScalerV1;
+import org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.TFAiOnnxOperator;
+import org.onnx4j.Inputs;
+import org.onnx4j.model.graph.Node;
+import org.onnx4j.opsets.domain.aiOnnx.v1.ops.ImageScalerV1;
+import org.onnx4j.opsets.operator.OperatorOutputs;
 import org.tensorflow.Operand;
 import org.tensorflow.Tensor;
-import org.tensorflow.op.Scope;
-import org.tensorflow.op.core.Constant;
-import org.tensorflow.op.math.Mul;
+import org.tensorflow.op.nn.BiasAdd;
+
+import com.google.common.primitives.Floats;
 
 @Deprecated
-public class TFImageScalerV1 extends TFOperator implements ImageScalerV1<Tensor<?>> {
+public class TFImageScalerV1 extends TFAiOnnxOperator<Tensor<Float>> implements ImageScalerV1 {
 
 	@Override
-	public Tensor<?> scale(Tensor<?> input, Float scale, List<Float> bias) {
-		Scope scope = new Scope(TFSession.get());
-		
-		Operand x = TensorUtil.toConstant(scope, input);
-		Operand y = Constant.create(scope, scale);
-		//BiasAdd.create(scope, value, bias, BiasAdd.dataFormat(dataFormat))
-		return Mul.create(scope, x, y).asOutput().tensor();
+	public OperatorOutputs<Tensor<Float>> forward(Node node, Inputs inputs) {
+		ImageScalerInputsV1<Tensor<Float>> castedOperatorInputs = new ImageScalerInputsV1<Tensor<Float>>(node, inputs);
+		Tensor<Float> input = castedOperatorInputs.getInput();
+		Float scale = castedOperatorInputs.getScale();
+		List<Float> bias = castedOperatorInputs.getBias();
+		return new ImageScalerOutputV1<Tensor<Float>>(this.scale(input, scale, bias));
+	}
+
+	protected Tensor<Float> scale(Tensor<Float> input, Float scale, List<Float> bias) {
+		TFOps tfOps = TFSession.getOps();
+
+		Operand<Float> opX = tfOps.constant(input);
+		Operand<Float> opY = tfOps.ops().constant(scale);
+		Operand<Float> opMul = tfOps.ops().math.mul(opX, opY);
+		if (bias != null && bias.size() > 0) {
+			return tfOps.ops().nn.biasAdd(opMul, tfOps.ops().constant(Floats.toArray(bias)), BiasAdd.dataFormat("NCHW"))
+					.asOutput().tensor();
+		} else {
+			return opMul.asOutput().tensor();
+		}
 	}
 
 }

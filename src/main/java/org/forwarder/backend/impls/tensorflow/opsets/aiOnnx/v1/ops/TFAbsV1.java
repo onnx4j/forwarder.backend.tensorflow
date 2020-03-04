@@ -16,20 +16,29 @@
  */
 package org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.v1.ops;
 
+import org.forwarder.backend.impls.tensorflow.TFOps;
 import org.forwarder.backend.impls.tensorflow.TFSession;
-import org.forwarder.backend.impls.tensorflow.opsets.TFOperator;
-import org.forwarder.backend.impls.tensorflow.utils.TensorUtil;
-import org.onnx4j.opsets.aiOnnx.v1.ops.AbsV1;
+import org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.TFAiOnnxOperator;
+import org.onnx4j.Inputs;
+import org.onnx4j.model.graph.Node;
+import org.onnx4j.opsets.domain.aiOnnx.v1.ops.AbsV1;
+import org.onnx4j.opsets.operator.OperatorOutputs;
 import org.tensorflow.Tensor;
-import org.tensorflow.op.Scope;
 import org.tensorflow.op.math.Abs;
 
-public class TFAbsV1 extends TFOperator implements AbsV1<Tensor<?>> {
+public class TFAbsV1 extends TFAiOnnxOperator<Tensor<Number>> implements AbsV1 {
 
 	@Override
-	public Tensor<?> abs(Tensor<?> x) {
-		Scope scope = new Scope(TFSession.get());
-		return Abs.create(scope, TensorUtil.toConstant(scope, (Tensor<Number>) x)).asOutput().tensor();
+	public OperatorOutputs<Tensor<Number>> forward(Node node, Inputs inputs) {
+		AbsInputsV1<Tensor<Number>> castedOperatorInputs = new AbsInputsV1<Tensor<Number>>(node, inputs);
+		Tensor<Number> x = castedOperatorInputs.getX();
+		return new AbsOutputV1<Tensor<Number>>(this.abs(x));
+	}
+
+	protected Tensor<Number> abs(Tensor<Number> x) {
+		TFOps tfOps = TFSession.getOps();
+		Abs<Number> abs = tfOps.ops().math.abs(tfOps.constant(x));
+		return abs.asOutput().tensor();
 	}
 
 }

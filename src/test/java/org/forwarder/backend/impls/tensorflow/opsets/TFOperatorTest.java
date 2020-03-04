@@ -26,7 +26,7 @@ public abstract class TFOperatorTest {
 	private TFSession session;
 
 	public TFOperatorTest() {
-		this.session = new TFSession(null, null);
+		this.session = new TFSession(null);
 	}
 	
 	public TFSession getSession() {

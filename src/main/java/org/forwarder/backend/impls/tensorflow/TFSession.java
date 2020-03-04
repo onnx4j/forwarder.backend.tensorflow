@@ -17,9 +17,9 @@
 package org.forwarder.backend.impls.tensorflow;
 
 import org.forwarder.Session;
-import org.forwarder.executor.Executor;
 import org.tensorflow.EagerSession;
 import org.tensorflow.Tensor;
+import org.tensorflow.op.Scope;
 
 public class TFSession extends Session<Tensor<?>> {
 
@@ -41,12 +41,24 @@ public class TFSession extends Session<Tensor<?>> {
 		return TFSession.getSession().tfSession;
 	}
 
-	private EagerSession tfSession;
+	public static Scope getScope() {
+		return TFSession.getSession().tfScope;
+	}
+	
+	public static TFOps getOps() {
+		return TFSession.getSession().tfOps;
+	}
 
-	public TFSession(Executor<Tensor<?>> executor, TFBackend backend) {
-		super(executor, backend);
+	private EagerSession tfSession;
+	private Scope tfScope;
+	private TFOps tfOps;
+
+	public TFSession(TFBackend backend) {
+		super(backend);
 
 		this.tfSession = this.createTFSession();
+		this.tfScope = new Scope(this.tfSession);
+		this.tfOps = new TFOps(this.tfScope);
 	}
 	
 	@Override

@@ -19,26 +19,33 @@ package org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.v1.ops;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.forwarder.backend.impls.tensorflow.TFOps;
 import org.forwarder.backend.impls.tensorflow.TFSession;
-import org.forwarder.backend.impls.tensorflow.opsets.TFOperator;
-import org.forwarder.backend.impls.tensorflow.utils.TensorUtil;
-import org.onnx4j.opsets.aiOnnx.v1.ops.ConcatV1;
+import org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.TFAiOnnxOperator;
+import org.onnx4j.Inputs;
+import org.onnx4j.model.graph.Node;
+import org.onnx4j.opsets.domain.aiOnnx.v1.ops.ConcatV1;
+import org.onnx4j.opsets.operator.OperatorOutputs;
+import org.tensorflow.Operand;
 import org.tensorflow.Tensor;
-import org.tensorflow.op.Scope;
-import org.tensorflow.op.core.Concat;
-import org.tensorflow.op.core.Constant;
 
-public class TFConcatV1 extends TFOperator implements ConcatV1<Tensor<?>> {
+public class TFConcatV1 extends TFAiOnnxOperator<Tensor<Number>> implements ConcatV1 {
 
 	@Override
-	public Tensor<?> concat(List<Tensor<?>> inputs, Long axis) {
-		Scope scope = new Scope(TFSession.get());
-		List constants = new LinkedList();
-		for (Tensor<?> tensor : inputs) {
-			constants.add(TensorUtil.toConstant(scope, tensor));
-		}
+	public OperatorOutputs<Tensor<Number>> forward(Node node, Inputs inputs) {
+		ConcatInputsV1<Tensor<Number>> castedOperatorInputs = new ConcatInputsV1<Tensor<Number>>(node, inputs);
+		List<Tensor<Number>> inputList = castedOperatorInputs.getInputs();
+		Long axis = castedOperatorInputs.getAxis();
+		return new ConcatOutputV1<Tensor<Number>>(this.concat(inputList, axis));
+	}
 
-		return Concat.create(scope, constants, Constant.create(scope, axis)).asOutput().tensor();
+	protected Tensor<Number> concat(List<Tensor<Number>> inputs, Long axis) {
+		TFOps tfOps = TFSession.getOps();
+		List<Operand<Number>> constants = new LinkedList<Operand<Number>>();
+		for (Tensor<Number> tensor : inputs) {
+			constants.add(tfOps.constant(tensor));
+		}
+		return tfOps.ops().concat(constants, tfOps.ops().constant(axis)).asOutput().tensor();
 	}
 
 }

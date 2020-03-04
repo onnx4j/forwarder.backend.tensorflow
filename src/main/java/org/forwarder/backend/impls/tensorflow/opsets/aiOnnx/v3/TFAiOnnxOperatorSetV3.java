@@ -17,10 +17,9 @@
 package org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.v3;
 
 import org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.v2.TFAiOnnxOperatorSetV2;
-import org.onnx4j.opsets.aiOnnx.v3.AiOnnxOperatorSetSpecV3;
-import org.tensorflow.Tensor;
+import org.onnx4j.opsets.domain.aiOnnx.v3.AiOnnxOpsetInitializerV3;
 
-public class TFAiOnnxOperatorSetV3 extends TFAiOnnxOperatorSetV2 implements AiOnnxOperatorSetSpecV3<Tensor<?>> {
+public class TFAiOnnxOperatorSetV3 extends TFAiOnnxOperatorSetV2 implements AiOnnxOpsetInitializerV3 {
 
 	public TFAiOnnxOperatorSetV3() {
 		super(1, "", "", 3L, "ONNX OPSET-V3 USING TENSORFLOW BACKEND");

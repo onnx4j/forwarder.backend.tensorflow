@@ -17,31 +17,19 @@
 package org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.v6;
 
 import org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.v5.TFAiOnnxOperatorSetV5;
+import org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.v6.ops.TFBatchNormalizationV6;
 import org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.v6.ops.TFDropoutV6;
 import org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.v6.ops.TFMulV6;
-import org.onnx4j.opsets.aiOnnx.v6.AiOnnxOperatorSetSpecV6;
-import org.onnx4j.opsets.aiOnnx.v6.ops.CastV6;
-import org.onnx4j.opsets.aiOnnx.v6.ops.DropoutV6;
-import org.onnx4j.opsets.aiOnnx.v6.ops.MulV6;
-import org.onnx4j.opsets.aiOnnx.v6.ops.SigmoidV6;
-import org.onnx4j.opsets.aiOnnx.v6.ops.SubV6;
-import org.onnx4j.opsets.aiOnnx.v6.ops.SumV6;
-import org.tensorflow.Tensor;
+import org.onnx4j.opsets.domain.aiOnnx.v6.AiOnnxOpsetInitializerV6;
+import org.onnx4j.opsets.domain.aiOnnx.v6.ops.BatchNormalizationV6;
+import org.onnx4j.opsets.domain.aiOnnx.v6.ops.CastV6;
+import org.onnx4j.opsets.domain.aiOnnx.v6.ops.DropoutV6;
+import org.onnx4j.opsets.domain.aiOnnx.v6.ops.MulV6;
+import org.onnx4j.opsets.domain.aiOnnx.v6.ops.SigmoidV6;
+import org.onnx4j.opsets.domain.aiOnnx.v6.ops.SubV6;
+import org.onnx4j.opsets.domain.aiOnnx.v6.ops.SumV6;
 
-public class TFAiOnnxOperatorSetV6 extends TFAiOnnxOperatorSetV5 implements AiOnnxOperatorSetSpecV6<Tensor<?>> {
-
-	@Override
-	public MulV6<Tensor<?>> getMulV6() {
-		return new TFMulV6();
-	}
-
-	@Override
-	public DropoutV6<Tensor<?>> getDropoutV6() {
-		return new TFDropoutV6();
-	}
-
-	@Override
-	public CastV6<Tensor<?>> getCastV6() { return null; }
+public class TFAiOnnxOperatorSetV6 extends TFAiOnnxOperatorSetV5 implements AiOnnxOpsetInitializerV6 {
 
 	public TFAiOnnxOperatorSetV6() {
 		super(1, "", "", 6L, "ONNX OPSET-V6 USING TENSORFLOW BACKEND");
@@ -53,21 +41,41 @@ public class TFAiOnnxOperatorSetV6 extends TFAiOnnxOperatorSetV5 implements AiOn
 	}
 
 	@Override
-	public SubV6<Tensor<?>> getSubV6() {
+	public MulV6 getMulV6() {
+		return new TFMulV6();
+	}
+
+	@Override
+	public DropoutV6 getDropoutV6() {
+		return new TFDropoutV6();
+	}
+
+	@Override
+	public CastV6 getCastV6() {
+		return null;
+	}
+
+	@Override
+	public SubV6 getSubV6() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public SumV6<Tensor<?>> getSumV6() {
+	public SumV6 getSumV6() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public SigmoidV6<Tensor<?>> getSigmoidV6() {
+	public SigmoidV6 getSigmoidV6() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public BatchNormalizationV6 getBatchNormalizationV6() {
+		return new TFBatchNormalizationV6();
 	}
 
 }

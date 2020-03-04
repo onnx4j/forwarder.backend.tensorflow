@@ -16,21 +16,33 @@
  */
 package org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.v1.ops;
 
+import org.forwarder.backend.impls.tensorflow.TFOps;
 import org.forwarder.backend.impls.tensorflow.TFSession;
-import org.forwarder.backend.impls.tensorflow.opsets.TFOperator;
-import org.forwarder.backend.impls.tensorflow.utils.TensorUtil;
-import org.onnx4j.opsets.aiOnnx.v1.ops.ArgMaxV1;
+import org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.TFAiOnnxOperator;
+import org.onnx4j.Inputs;
+import org.onnx4j.model.graph.Node;
+import org.onnx4j.opsets.domain.aiOnnx.v1.ops.ArgMaxV1;
+import org.onnx4j.opsets.operator.OperatorOutputs;
+import org.tensorflow.Operand;
 import org.tensorflow.Tensor;
-import org.tensorflow.op.Scope;
-import org.tensorflow.op.core.Constant;
 import org.tensorflow.op.math.ArgMax;
 
-public class TFArgMaxV1 extends TFOperator implements ArgMaxV1<Tensor<?>> {
+public class TFArgMaxV1 extends TFAiOnnxOperator<Tensor<Long>> implements ArgMaxV1 {
 
 	@Override
-	public Tensor<?> argmax(Tensor<?> x, int axis, int keepdims) {
-		Scope scope = new Scope(TFSession.get());
-		return ArgMax.create(scope, TensorUtil.toConstant(scope, x), Constant.create(scope, axis)).asOutput().tensor();
+	public OperatorOutputs<Tensor<Long>> forward(Node node, Inputs inputs) {
+		ArgMaxInputsV1<Tensor<Number>> castedOperatorInputs = new ArgMaxInputsV1<Tensor<Number>>(node, inputs);
+		Tensor<Number> data = castedOperatorInputs.getData();
+		Long axis = castedOperatorInputs.getAxis();
+		Long keepdims = castedOperatorInputs.getKeepdims();
+		return new ArgMaxOutputV1<Tensor<Long>>(this.argmax(data, axis, keepdims));
+	}
+
+	protected Tensor<Long> argmax(Tensor<Number> x0, Long axis, Long keepdims) {
+		TFOps tfOps = TFSession.getOps();
+		Operand<Number> operandX0 = tfOps.constant(x0);
+		ArgMax<Long> operandArgMax = tfOps.ops().math.argMax(operandX0, tfOps.ops().constant(keepdims));
+		return operandArgMax.asOutput().tensor();
 	}
 
 }

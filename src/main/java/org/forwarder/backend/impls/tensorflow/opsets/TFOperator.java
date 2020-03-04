@@ -16,6 +16,15 @@
  */
 package org.forwarder.backend.impls.tensorflow.opsets;
 
-public abstract class TFOperator {
+import org.forwarder.opset.operator.Executable;
+import org.onnx4j.opsets.operator.OperatorInputs;
+
+public abstract class TFOperator<T> implements Executable<T> {
+	
+	//public Envirment
+	
+	public void preconditions(OperatorInputs<T> operatorInputs) {
+		
+	}
 
 }

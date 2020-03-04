@@ -17,20 +17,36 @@
 package org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.v1.ops;
 
 import java.util.List;
-import java.util.Optional;
 
-import org.forwarder.backend.impls.tensorflow.opsets.TFOperator;
-import org.onnx4j.opsets.aiOnnx.v1.ops.DropoutV1;
+import org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.TFAiOnnxOperator;
+import org.onnx4j.Inputs;
+import org.onnx4j.model.graph.Node;
+import org.onnx4j.opsets.domain.aiOnnx.v1.ops.DropoutV1;
+import org.onnx4j.opsets.operator.OperatorOutputs;
 import org.tensorflow.Tensor;
 
-public class TFDropoutV1 extends TFOperator implements DropoutV1<Tensor<?>> {
+public class TFDropoutV1 extends TFAiOnnxOperator<Tensor<Number>> implements DropoutV1 {
 
 	@Override
-	public List<Tensor<?>> dropout(Tensor<?> data, Boolean isTest, Float ratio, List<Long> consumedInputs) {
-		if (isTest == false)
+	public OperatorOutputs<Tensor<Number>> forward(Node node, Inputs inputs) {
+		DropoutInputsV1<Tensor<Number>> castedOperatorInputs = new DropoutInputsV1<Tensor<Number>>(node, inputs);
+		Tensor<Number> data = castedOperatorInputs.getData();
+		Boolean isTest = castedOperatorInputs.isTest();
+		Float ratio = castedOperatorInputs.getRatio();
+		List<Long> consumedInputs = castedOperatorInputs.getConsumedInputs();
+		return new DropoutOutputV1<Tensor<Number>>(this.dropout(data, isTest, ratio, consumedInputs));
+	}
+
+	protected Tensor<Number> dropout(Tensor<Number> data, Boolean isTest, Float ratio, List<Long> consumedInputs) {
+		//
+		// if isTest is true, run dropout in test mode where the output is
+		// simply Y = X
+		//
+		if (isTest)
+			return data;
+		else {
 			throw new UnsupportedOperationException("Can not run " + DropoutV1.OP_TYPE + " in not test mode");
-		
-		return this.wrapMultiOutputs(Optional.of(data), Optional.empty());
+		}
 	}
 
 }

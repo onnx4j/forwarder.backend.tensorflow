@@ -21,7 +21,7 @@ import java.nio.ByteOrder;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.tensorflow.Operand;
+import org.tensorflow.Operation;
 import org.tensorflow.Tensor;
 import org.tensorflow.op.Scope;
 
@@ -45,18 +45,17 @@ public class TensorUtil {
 		buffer.flip();
 		return buffer;
 	}
-	
-	public static <T> Operand<T> toConstant(Scope scope, Tensor<T> tensor) {
+
+	public static <T> Operation toConstant(Scope scope, Tensor<T> tensor) {
 		return scope.env()
 				.opBuilder("Const", scope.makeOpName("Const"))
 				.setAttr("dtype", tensor.dataType())
 				.setAttr("value", tensor)
-				.build()
-				.output(0);
+				.build();
 	}
 	
-	public static <T> List<Operand<T>> toConstant(Scope scope, List<Tensor<T>> tensors) {
-		List<Operand<T>> constants = new LinkedList<Operand<T>>();
+	public static <T> List<Operation> toConstant(Scope scope, List<Tensor<T>> tensors) {
+		List<Operation> constants = new LinkedList<Operation>();
 		for (Tensor<T> tensor : tensors) {
 			constants.add(toConstant(scope, tensor));
 		}

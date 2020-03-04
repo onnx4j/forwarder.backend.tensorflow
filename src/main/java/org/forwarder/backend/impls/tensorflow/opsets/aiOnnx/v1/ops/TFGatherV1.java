@@ -16,27 +16,34 @@
  */
 package org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.v1.ops;
 
+import org.forwarder.backend.impls.tensorflow.TFOps;
 import org.forwarder.backend.impls.tensorflow.TFSession;
-import org.forwarder.backend.impls.tensorflow.opsets.TFOperator;
-import org.forwarder.backend.impls.tensorflow.utils.TensorUtil;
-import org.onnx4j.opsets.aiOnnx.v1.ops.AbsV1;
-import org.onnx4j.opsets.aiOnnx.v1.ops.GatherV1;
+import org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.TFAiOnnxOperator;
+import org.onnx4j.Inputs;
+import org.onnx4j.model.graph.Node;
+import org.onnx4j.opsets.domain.aiOnnx.v1.ops.GatherV1;
+import org.onnx4j.opsets.operator.OperatorOutputs;
 import org.tensorflow.Operand;
 import org.tensorflow.Tensor;
 import org.tensorflow.Tensors;
-import org.tensorflow.op.Scope;
-import org.tensorflow.op.core.Gather;
-import org.tensorflow.op.math.Abs;
 
-public class TFGatherV1 extends TFOperator implements GatherV1<Tensor<?>> {
+public class TFGatherV1 extends TFAiOnnxOperator<Tensor<Number>> implements GatherV1 {
 
 	@Override
-	public Tensor<?> gather(Tensor<?> data, Tensor<?> indices, Long axis) {
-		Scope scope = new Scope(TFSession.get());
-		Operand opParams = TensorUtil.toConstant(scope, data);
-		Operand opIndices = TensorUtil.toConstant(scope, indices);
-		Operand opAxis = TensorUtil.toConstant(scope, Tensors.create(axis));
-		return Gather.create(scope, opParams, opIndices, opAxis).asOutput().tensor();
+	public OperatorOutputs<Tensor<Number>> forward(Node node, Inputs inputs) {
+		GatherInputsV1<Tensor<Number>> castedOperatorInputs = new GatherInputsV1<Tensor<Number>>(node, inputs);
+		Tensor<Number> data = castedOperatorInputs.getData();
+		Tensor<Number> indices = castedOperatorInputs.getIndices();
+		Long axis = castedOperatorInputs.getAxis();
+		return new GatherOutputV1<Tensor<Number>>(this.gather(data, indices, axis));
+	}
+
+	protected Tensor<Number> gather(Tensor<Number> data, Tensor<Number> indices, Long axis) {
+		TFOps tfOps = TFSession.getOps();
+		Operand<Number> opParams = tfOps.constant(data);
+		Operand<Number> opIndices = tfOps.constant(indices);
+		Operand<Long> opAxis = tfOps.constant(Tensors.create(axis));
+		return tfOps.ops().gather(opParams, opIndices, opAxis).asOutput().tensor();
 	}
 
 }

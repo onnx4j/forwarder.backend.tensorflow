@@ -14,33 +14,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.v1.ops;
+package org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.v6.ops;
 
-import org.forwarder.backend.impls.tensorflow.TFOps;
-import org.forwarder.backend.impls.tensorflow.TFSession;
-import org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.TFAiOnnxOperator;
+import org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.v1.ops.TFBatchNormalizationV1;
 import org.onnx4j.Inputs;
 import org.onnx4j.model.graph.Node;
-import org.onnx4j.opsets.domain.aiOnnx.v1.ops.MatMulV1;
+import org.onnx4j.opsets.domain.aiOnnx.v6.ops.BatchNormalizationV6;
 import org.onnx4j.opsets.operator.OperatorOutputs;
 import org.tensorflow.Tensor;
-import org.tensorflow.op.linalg.MatMul;
 
-public class TFMatMulV1 extends TFAiOnnxOperator<Tensor<Number>> implements MatMulV1 {
+public class TFBatchNormalizationV6 extends TFBatchNormalizationV1 implements BatchNormalizationV6 {
 
 	@Override
 	public OperatorOutputs<Tensor<Number>> forward(Node node, Inputs inputs) {
-		MatMulInputsV1<Tensor<Number>> castedOperatorInputs = new MatMulInputsV1<Tensor<Number>>(node, inputs);
-		Tensor<Number> a = castedOperatorInputs.getA();
+		BatchNormalizationInputsV6<Tensor<Number>> castedOperatorInputs = new BatchNormalizationInputsV6<Tensor<Number>>(
+				node, inputs);
+		Tensor<Number> x = castedOperatorInputs.getX();
+		Tensor<Number> scale = castedOperatorInputs.getScale();
 		Tensor<Number> b = castedOperatorInputs.getB();
-		return new MatMulOutputV1<Tensor<Number>>(this.matmul(a, b));
-	}
-
-	protected Tensor<Number> matmul(Tensor<Number> x0, Tensor<Number> x1) {
-		TFOps tfOps = TFSession.getOps();
-		return tfOps.ops().linalg
-				.matMul(tfOps.constant(x0), tfOps.constant(x1), MatMul.transposeA(false).transposeB(false)).asOutput()
-				.tensor();
+		Tensor<Number> mean = castedOperatorInputs.getMean();
+		Tensor<Number> var = castedOperatorInputs.getVar();
+		Float epsilon = castedOperatorInputs.getEpsilon();
+		Float momentum = castedOperatorInputs.getMomentum();
+		Boolean spatial = castedOperatorInputs.isSpatial();
+		return new BatchNormalizationOutputsV6<Tensor<Number>>(
+				this.batchNormalization(x, scale, b, mean, var, null, epsilon, true, momentum, spatial));
 	}
 
 }

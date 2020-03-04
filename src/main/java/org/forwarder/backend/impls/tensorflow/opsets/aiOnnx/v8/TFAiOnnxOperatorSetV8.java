@@ -17,11 +17,10 @@
 package org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.v8;
 
 import org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.v7.TFAiOnnxOperatorSetV7;
-import org.onnx4j.opsets.aiOnnx.v8.AiOnnxOperatorSetSpecV8;
-import org.onnx4j.opsets.aiOnnx.v8.ops.SumV8;
-import org.tensorflow.Tensor;
+import org.onnx4j.opsets.domain.aiOnnx.v8.AiOnnxOpsetInitializerV8;
+import org.onnx4j.opsets.domain.aiOnnx.v8.ops.SumV8;
 
-public class TFAiOnnxOperatorSetV8 extends TFAiOnnxOperatorSetV7 implements AiOnnxOperatorSetSpecV8<Tensor<?>> {
+public class TFAiOnnxOperatorSetV8 extends TFAiOnnxOperatorSetV7 implements AiOnnxOpsetInitializerV8 {
 
 	public TFAiOnnxOperatorSetV8() {
 		super(1, "", "", 8L, "ONNX OPSET-V8 USING TENSORFLOW BACKEND");
@@ -33,7 +32,7 @@ public class TFAiOnnxOperatorSetV8 extends TFAiOnnxOperatorSetV7 implements AiOn
 	}
 
 	@Override
-	public SumV8<Tensor<?>> getSumV8() {
+	public SumV8 getSumV8() {
 		// TODO Auto-generated method stub
 		return null;
 	}

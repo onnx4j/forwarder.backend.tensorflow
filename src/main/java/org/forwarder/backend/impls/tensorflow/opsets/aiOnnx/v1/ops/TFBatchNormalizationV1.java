@@ -18,33 +18,46 @@ package org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.v1.ops;
 
 import java.util.List;
 
+import org.forwarder.backend.impls.tensorflow.TFOps;
 import org.forwarder.backend.impls.tensorflow.TFSession;
-import org.forwarder.backend.impls.tensorflow.opsets.TFOperator;
-import org.forwarder.backend.impls.tensorflow.utils.TensorUtil;
-import org.onnx4j.opsets.aiOnnx.v1.ops.BatchNormalizationV1;
+import org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.TFAiOnnxOperator;
+import org.onnx4j.Inputs;
+import org.onnx4j.model.graph.Node;
+import org.onnx4j.opsets.domain.aiOnnx.v1.ops.BatchNormalizationV1;
+import org.onnx4j.opsets.operator.OperatorOutputs;
 import org.tensorflow.Operand;
-import org.tensorflow.Output;
 import org.tensorflow.Tensor;
-import org.tensorflow.op.Scope;
-import org.tensorflow.op.core.Constant;
-import org.tensorflow.op.linalg.Transpose;
 import org.tensorflow.op.nn.FusedBatchNorm;
 
-public class TFBatchNormalizationV1 extends TFOperator implements BatchNormalizationV1<Tensor<?>> {
+public class TFBatchNormalizationV1 extends TFAiOnnxOperator<Tensor<Number>> implements BatchNormalizationV1 {
 
 	@Override
-	public Tensor<?>[] batchNormalization(Tensor<?> x, Tensor<?> scale, Tensor<?> b, Tensor<?> mean, Tensor<?> var,
+	public OperatorOutputs<Tensor<Number>> forward(Node node, Inputs inputs) {
+		BatchNormalizationInputsV1<Tensor<Number>> castedOperatorInputs = new BatchNormalizationInputsV1<Tensor<Number>>(node, inputs);
+		Tensor<Number> x = castedOperatorInputs.getX();
+		Tensor<Number> scale = castedOperatorInputs.getScale();
+		Tensor<Number> b = castedOperatorInputs.getB();
+		Tensor<Number> mean = castedOperatorInputs.getMean();
+		Tensor<Number> var = castedOperatorInputs.getVar();
+		Float epsilon = castedOperatorInputs.getEpsilon();
+		Boolean isTest = castedOperatorInputs.isTest();
+		Float momentum = castedOperatorInputs.getMomentum();
+		Boolean spatial = castedOperatorInputs.isSpatial();
+		List<Long> consumedInputs = castedOperatorInputs.getConsumedInputs();
+		return new BatchNormalizationOutputsV1<Tensor<Number>>(
+				this.batchNormalization(x, scale, b, mean, var, consumedInputs, epsilon, isTest, momentum, spatial));
+	}
+
+	public Tensor<Number> batchNormalization(Tensor<Number> x, Tensor<Number> scale, Tensor<Number> b, Tensor<Number> mean, Tensor<Number> var,
 			List<Long> consumedInputs, Float epsilon, Boolean isTest, Float momentum, Boolean spatial) {
-		Scope scope = new Scope(TFSession.get());
-		
-		Operand opX = TensorUtil.toConstant(scope, x);
-		Operand opMean = TensorUtil.toConstant(scope, mean);
-		Operand opVar = TensorUtil.toConstant(scope, var);
-		Operand opBeta = TensorUtil.toConstant(scope, b);
-		Operand opGamma = TensorUtil.toConstant(scope, scale);
-		Output output = FusedBatchNorm.create(
-				scope, 
-				this.toNHWC(scope, opX),
+		TFOps tfOps = TFSession.getOps();
+		Operand<Number> opX = tfOps.constant(x);
+		Operand<Number> opMean = tfOps.constant(mean);
+		Operand<Number> opVar = tfOps.constant(var);
+		Operand<Number> opBeta = tfOps.constant(b);
+		Operand<Number> opGamma = tfOps.constant(scale);
+		Operand<Number> opFusedBatchNorm = tfOps.ops().nn.fusedBatchNorm(
+				tfOps.toNHWC(opX), 
 				opGamma, 
 				opBeta, 
 				opMean, 
@@ -53,7 +66,7 @@ public class TFBatchNormalizationV1 extends TFOperator implements BatchNormaliza
 					.dataFormat("NHWC")
 					.epsilon(epsilon)
 					.isTraining(false)
-				).y();
+			).y();
 		/*Operation opBatchNorm = scope.env()
 			.opBuilder("tf.nn.batch_normalization", scope.makeOpName("BatchNormWithGlobalNormalization"))
 			.addInput(TensorUtil.toConstant(scope, x).asOutput())
@@ -66,15 +79,7 @@ public class TFBatchNormalizationV1 extends TFOperator implements BatchNormaliza
 			.build();*/
 		//Operand opBatchNorm = BatchNormWithGlobalNormalization.create(scope, opX, opMean, opVar, opBeta, opGamma,
 		//		epsilon, true);
-		return new Tensor<?>[] { this.toNCHW(scope, output).asOutput().tensor() };
-	}
-
-	private <T> Operand<T> toNCHW(Scope scope, Operand<T> inputNHWC) {
-		return Transpose.create(scope, inputNHWC, Constant.create(scope, new int[] { 0, 3, 1, 2 }));
-	}
-
-	private <T> Operand<T> toNHWC(Scope scope, Operand<T> inputNCHW) {
-		return Transpose.create(scope, inputNCHW, Constant.create(scope, new int[] { 0, 2, 3, 1 }));
+		return opFusedBatchNorm.asOutput().tensor();
 	}
 
 }

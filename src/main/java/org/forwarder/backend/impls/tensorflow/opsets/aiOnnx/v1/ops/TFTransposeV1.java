@@ -18,35 +18,31 @@ package org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.v1.ops;
 
 import java.util.List;
 
+import org.forwarder.backend.impls.tensorflow.TFOps;
 import org.forwarder.backend.impls.tensorflow.TFSession;
 import org.forwarder.backend.impls.tensorflow.opsets.TFOperator;
-import org.forwarder.backend.impls.tensorflow.utils.TensorUtil;
-import org.onnx4j.opsets.aiOnnx.v1.ops.TransposeV1;
+import org.onnx4j.Inputs;
+import org.onnx4j.model.graph.Node;
+import org.onnx4j.opsets.domain.aiOnnx.v1.ops.TransposeV1;
+import org.onnx4j.opsets.operator.OperatorOutputs;
 import org.tensorflow.Tensor;
-import org.tensorflow.op.Scope;
-import org.tensorflow.op.core.Constant;
-import org.tensorflow.op.linalg.Transpose;
 
 import com.google.common.primitives.Longs;
 
-public class TFTransposeV1 extends TFOperator implements TransposeV1<Tensor<?>> {
+public class TFTransposeV1 extends TFOperator<Tensor<? extends Number>> implements TransposeV1 {
 
 	@Override
-	public OperatorStatus getStatus() {
-		return OperatorStatus.STABLE;
+	public OperatorOutputs<Tensor<? extends Number>> forward(Node node, Inputs inputs) {
+		TransposeInputsV1<Tensor<? extends Number>> castedOperatorInputs = new TransposeInputsV1<Tensor<? extends Number>>(node, inputs);
+		Tensor<? extends Number> data = castedOperatorInputs.getData();
+		List<Long> perm = castedOperatorInputs.getPerm();
+		return new TransposeOutputV1<Tensor<? extends Number>>(this.transpose(data, perm));
 	}
 
-	@Override
-	public Tensor<?> transpose(Tensor<?> data, List<Long> perm) {
-		Scope scope = new Scope(TFSession.get());
-		return Transpose
-			.create(
-				scope, 
-				TensorUtil.toConstant(scope, data), 
-				Constant.create(scope, Longs.toArray(perm))
-			)
-			.asOutput()
-			.tensor();
+	protected Tensor<? extends Number> transpose(Tensor<? extends Number> data, List<Long> perm) {
+		TFOps tfOps = TFSession.getOps();
+		return tfOps.ops().linalg.transpose(tfOps.constant(data), tfOps.ops().constant(Longs.toArray(perm))).asOutput()
+				.tensor();
 	}
 
 }

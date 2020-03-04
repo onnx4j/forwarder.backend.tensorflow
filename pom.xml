@@ -13,6 +13,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>1.8</java.version>
+		<tensorflow.version>1.15.0</tensorflow.version>
 	</properties>
 
 	<dependencies>
@@ -24,7 +25,18 @@
 		<dependency>
 			<groupId>org.tensorflow</groupId>
 			<artifactId>tensorflow</artifactId>
-			<version>1.15.0</version>
+			<version>${tensorflow.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.tensorflow</groupId>
+			<artifactId>proto</artifactId>
+			<version>${tensorflow.version}</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>protobuf-java</artifactId>
+					<groupId>com.google.protobuf</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>

@@ -18,14 +18,13 @@ package org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.v4;
 
 import org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.v3.TFAiOnnxOperatorSetV3;
 import org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.v4.ops.TFConcatV4;
-import org.onnx4j.opsets.aiOnnx.v4.AiOnnxOperatorSetSpecV4;
-import org.onnx4j.opsets.aiOnnx.v4.ops.ConcatV4;
-import org.tensorflow.Tensor;
+import org.onnx4j.opsets.domain.aiOnnx.v4.AiOnnxOpsetInitializerV4;
+import org.onnx4j.opsets.domain.aiOnnx.v4.ops.ConcatV4;
 
-public class TFAiOnnxOperatorSetV4 extends TFAiOnnxOperatorSetV3 implements AiOnnxOperatorSetSpecV4<Tensor<?>> {
+public class TFAiOnnxOperatorSetV4 extends TFAiOnnxOperatorSetV3 implements AiOnnxOpsetInitializerV4 {
 
 	@Override
-	public ConcatV4<Tensor<?>> getConcatV4() { return new TFConcatV4(); }
+	public ConcatV4 getConcatV4() { return new TFConcatV4(); }
 
 	public TFAiOnnxOperatorSetV4() {
 		super(1, "", "", 4L, "ONNX OPSET-V4 USING TENSORFLOW BACKEND");

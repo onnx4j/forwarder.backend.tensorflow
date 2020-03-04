@@ -18,6 +18,6 @@ package org.forwarder.backend.impls.tensorflow.opsets.aiOnnx;
 
 import org.forwarder.backend.impls.tensorflow.opsets.TFOperator;
 
-public abstract class TFAiOnnxOperator extends TFOperator {
+public abstract class TFAiOnnxOperator<T> extends TFOperator<T> {
 
 }

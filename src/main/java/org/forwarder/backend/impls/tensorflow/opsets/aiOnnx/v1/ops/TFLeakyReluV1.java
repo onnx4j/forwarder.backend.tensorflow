@@ -18,21 +18,30 @@ package org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.v1.ops;
 
 import java.util.List;
 
+import org.forwarder.backend.impls.tensorflow.TFOps;
 import org.forwarder.backend.impls.tensorflow.TFSession;
-import org.forwarder.backend.impls.tensorflow.opsets.TFOperator;
-import org.forwarder.backend.impls.tensorflow.utils.TensorUtil;
-import org.onnx4j.opsets.aiOnnx.v1.ops.LeakyReluV1;
+import org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.TFAiOnnxOperator;
+import org.onnx4j.Inputs;
+import org.onnx4j.model.graph.Node;
+import org.onnx4j.opsets.domain.aiOnnx.v1.ops.LeakyReluV1;
+import org.onnx4j.opsets.operator.OperatorOutputs;
 import org.tensorflow.Tensor;
-import org.tensorflow.op.Scope;
 import org.tensorflow.op.nn.LeakyRelu;
 
-public class TFLeakyReluV1 extends TFOperator implements LeakyReluV1<Tensor<?>> {
+public class TFLeakyReluV1 extends TFAiOnnxOperator<Tensor<Number>> implements LeakyReluV1 {
 
 	@Override
-	public Tensor<?> leakyRelu(Tensor<?> x, Float alpha, List<Long> consumedInputs) {
-		Scope scope = new Scope(TFSession.get());
-		return LeakyRelu.create(scope, TensorUtil.toConstant(scope, (Tensor<Number>) x), LeakyRelu.alpha(alpha))
-				.asOutput().tensor();
+	public OperatorOutputs<Tensor<Number>> forward(Node node, Inputs inputs) {
+		LeakyReluInputsV1<Tensor<Number>> castedOperatorInputs = new LeakyReluInputsV1<Tensor<Number>>(node, inputs);
+		Tensor<Number> x = castedOperatorInputs.getX();
+		Float alpha = castedOperatorInputs.getAlpha();
+		List<Long> consumedInputs = castedOperatorInputs.getConsumedInputs();
+		return new LeakyReluOutputV1<Tensor<Number>>(this.leakyRelu(x, alpha, consumedInputs));
+	}
+
+	protected Tensor<Number> leakyRelu(Tensor<Number> x, Float alpha, List<Long> consumedInputs) {
+		TFOps tfOps = TFSession.getOps();
+		return LeakyRelu.create(tfOps.scope(), tfOps.constant(x), LeakyRelu.alpha(alpha)).asOutput().tensor();
 	}
 
 }

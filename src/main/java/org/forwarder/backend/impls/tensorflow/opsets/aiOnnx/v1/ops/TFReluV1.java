@@ -18,20 +18,28 @@ package org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.v1.ops;
 
 import java.util.List;
 
+import org.forwarder.backend.impls.tensorflow.TFOps;
 import org.forwarder.backend.impls.tensorflow.TFSession;
-import org.forwarder.backend.impls.tensorflow.opsets.TFOperator;
-import org.forwarder.backend.impls.tensorflow.utils.TensorUtil;
-import org.onnx4j.opsets.aiOnnx.v1.ops.ReluV1;
+import org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.TFAiOnnxOperator;
+import org.onnx4j.Inputs;
+import org.onnx4j.model.graph.Node;
+import org.onnx4j.opsets.domain.aiOnnx.v1.ops.ReluV1;
+import org.onnx4j.opsets.operator.OperatorOutputs;
 import org.tensorflow.Tensor;
-import org.tensorflow.op.Scope;
-import org.tensorflow.op.nn.Relu;
 
-public class TFReluV1 extends TFOperator implements ReluV1<Tensor<?>> {
+public class TFReluV1 extends TFAiOnnxOperator<Tensor<Number>> implements ReluV1 {
 
 	@Override
-	public Tensor<?> relu(Tensor<?> x, List<Long> consumed_inputs) {
-		Scope scope = new Scope(TFSession.get());
-		return Relu.create(scope, TensorUtil.toConstant(scope, x)).asOutput().tensor();
+	public OperatorOutputs<Tensor<Number>> forward(Node node, Inputs inputs) {
+		ReluInputsV1<Tensor<Number>> castedOperatorInputs = new ReluInputsV1<Tensor<Number>>(node, inputs);
+		Tensor<Number> x = castedOperatorInputs.getX();
+		List<Long> consumedInputs = castedOperatorInputs.getConsumedInputs();
+		return new ReluOutputV1<Tensor<Number>>(this.relu(x, consumedInputs));
+	}
+
+	protected Tensor<Number> relu(Tensor<Number> x, List<Long> consumed_inputs) {
+		TFOps tfOps = TFSession.getOps();
+		return tfOps.ops().nn.relu(tfOps.constant(x)).asOutput().tensor();
 	}
 
 }

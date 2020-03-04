@@ -21,28 +21,38 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.lang3.NotImplementedException;
+import org.forwarder.backend.impls.tensorflow.TFOps;
 import org.forwarder.backend.impls.tensorflow.TFSession;
-import org.forwarder.backend.impls.tensorflow.opsets.TFOperator;
-import org.forwarder.backend.impls.tensorflow.utils.TensorUtil;
-import org.onnx4j.opsets.aiOnnx.v1.ops.AveragePoolV1;
-import org.onnx4j.opsets.aiOnnx.v1.ops.MaxPoolV1;
+import org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.TFAiOnnxOperator;
+import org.onnx4j.Inputs;
+import org.onnx4j.model.graph.Node;
+import org.onnx4j.opsets.domain.aiOnnx.v1.ops.AveragePoolV1;
+import org.onnx4j.opsets.domain.aiOnnx.v1.ops.MaxPoolV1;
+import org.onnx4j.opsets.operator.OperatorOutputs;
 import org.tensorflow.Operand;
 import org.tensorflow.Tensor;
-import org.tensorflow.op.Scope;
-import org.tensorflow.op.core.Constant;
-import org.tensorflow.op.linalg.Transpose;
 import org.tensorflow.op.nn.AvgPool;
 
 import com.google.common.collect.Lists;
 
-public class TFAveragePoolV1 extends TFOperator implements AveragePoolV1<Tensor<?>> {
+public class TFAveragePoolV1 extends TFAiOnnxOperator<Tensor<Number>> implements AveragePoolV1 {
 
 	@Override
-	public Tensor<?> averagePool(Tensor<?> data, String autoPad, List<Long> kernelShape, List<Long> pads,
-			List<Long> strides) {
-		Scope scope = new Scope(TFSession.get());
+	public OperatorOutputs<Tensor<Number>> forward(Node node, Inputs inputs) {
+		AveragePoolInputsV1<Tensor<Number>> castedOperatorInputs = new AveragePoolInputsV1<Tensor<Number>>(node,
+				inputs);
+		Tensor<Number> x = castedOperatorInputs.getX();
+		String autoPad = castedOperatorInputs.getAutoPad();
+		List<Long> kernelShape = castedOperatorInputs.getKernelShape();
+		List<Long> pads = castedOperatorInputs.getPads();
+		List<Long> strides = castedOperatorInputs.getStrides();
+		return new AveragePoolOutputV1<Tensor<Number>>(this.averagePool(x, autoPad, kernelShape, pads, strides));
+	}
 
-		Operand<? extends Number> constantData = TensorUtil.toConstant(scope, (Tensor<? extends Number>) data);
+	protected Tensor<Number> averagePool(Tensor<Number> data, String autoPad, List<Long> kernelShape, List<Long> pads,
+			List<Long> strides) {
+		TFOps tfOps = TFSession.getOps();
+		Operand<Number> constantData = tfOps.constant(data);
 
 		//
 		// Add 1L to first and last of kernelShape=[m, n]
@@ -61,31 +71,24 @@ public class TFAveragePoolV1 extends TFOperator implements AveragePoolV1<Tensor<
 		LinkedList<Long> newStrides = Lists.newLinkedList(strides);
 		newStrides.addFirst(1L);
 		newStrides.addLast(1L);
-		
-		Operand<? extends Number> value = this.toNHWC(scope, constantData);
 
-		Operand<? extends Number> opMaxPool = AvgPool.create(
-				scope, 
-				value, 
-				newKernelShape, 
-				newStrides,
-				this.getTFPadding(data, autoPad, kernelShape, pads, strides), 
-				AvgPool.dataFormat("NHWC"));
-		return this.toNCHW(scope, opMaxPool).asOutput().tensor();
+		Operand<Number> opAvgPool = tfOps.ops().nn.avgPool(tfOps.toNHWC(constantData), newKernelShape, newStrides,
+				this.getTFPadding(data, autoPad, kernelShape, pads, strides), AvgPool.dataFormat("NHWC"));
+		return tfOps.toNCHW(opAvgPool).asOutput().tensor();
 	}
 
-	private String getTFPadding(Tensor<?> data, String autoPad, List<Long> kernelShape, List<Long> pads,
+	private String getTFPadding(Tensor<Number> data, String autoPad, List<Long> kernelShape, List<Long> pads,
 			List<Long> strides) {
 		if ("NOTSET".equalsIgnoreCase(autoPad)) {
 			if (pads != null && pads.size() > 0) {
 				int nbSpatialSize = kernelShape.size();
 				Long[] validPads = new Long[nbSpatialSize * 2];
 				Arrays.fill(validPads, 0, validPads.length, 0L);
-				
+
 				if (Arrays.deepEquals(validPads, pads.toArray(new Long[pads.size()])))
 					return "VALID";
-				
-				throw new NotImplementedException(String.format("[%s] Tensorflow can not support \"%s\" padding mode", 
+
+				throw new NotImplementedException(String.format("[%s] Tensorflow can not support \"%s\" padding mode",
 						AveragePoolV1.OP_TYPE, autoPad));
 			} else {
 				return "VALID";
@@ -96,17 +99,9 @@ public class TFAveragePoolV1 extends TFOperator implements AveragePoolV1<Tensor<
 			else if ("VALID".equalsIgnoreCase(autoPad))
 				return "VALID";
 			else
-				throw new NotImplementedException(String.format("[%s] Tensorflow can not support \"%s\" padding mode", 
+				throw new NotImplementedException(String.format("[%s] Tensorflow can not support \"%s\" padding mode",
 						MaxPoolV1.OP_TYPE, autoPad));
 		}
-	}
-
-	private <T> Operand<T> toNCHW(Scope scope, Operand<T> inputNHWC) {
-		return Transpose.create(scope, inputNHWC, Constant.create(scope, new int[] { 0, 3, 1, 2 }));
-	}
-
-	private <T> Operand<T> toNHWC(Scope scope, Operand<T> inputNCHW) {
-		return Transpose.create(scope, inputNCHW, Constant.create(scope, new int[] { 0, 2, 3, 1 }));
 	}
 
 }

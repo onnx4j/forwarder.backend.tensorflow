@@ -19,13 +19,26 @@ package org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.v7.ops;
 import java.util.List;
 
 import org.forwarder.backend.impls.tensorflow.opsets.aiOnnx.v1.ops.TFAveragePoolV1;
-import org.onnx4j.opsets.aiOnnx.v7.ops.AveragePoolV7;
+import org.onnx4j.Inputs;
+import org.onnx4j.model.graph.Node;
+import org.onnx4j.opsets.domain.aiOnnx.v7.ops.AveragePoolV7;
+import org.onnx4j.opsets.operator.OperatorOutputs;
 import org.tensorflow.Tensor;
 
-public class TFAveragePoolV7 extends TFAveragePoolV1 implements AveragePoolV7<Tensor<?>> {
+public class TFAveragePoolV7 extends TFAveragePoolV1 implements AveragePoolV7 {
 
 	@Override
-	public Tensor<?> averagePool(Tensor<?> data, String autoPad, List<Long> kernelShape, List<Long> pads,
+	public OperatorOutputs<Tensor<Number>> forward(Node node, Inputs inputs) {
+		AveragePoolInputsV7<Tensor<Number>> castedOperatorInputs = new AveragePoolInputsV7<Tensor<Number>>(node, inputs);
+		Tensor<Number> x = castedOperatorInputs.getX();
+		String autoPad = castedOperatorInputs.getAutoPad();
+		List<Long> kernelShape = castedOperatorInputs.getKernelShape();
+		List<Long> pads = castedOperatorInputs.getPads();
+		List<Long> strides = castedOperatorInputs.getStrides();
+		return new AveragePoolOutputV7<Tensor<Number>>(this.averagePool(x, autoPad, kernelShape, pads, strides));
+	}
+
+	protected Tensor<?> averagePool(Tensor<Number> data, String autoPad, List<Long> kernelShape, List<Long> pads,
 			List<Long> strides, Long countIncludePad) {
 		if (countIncludePad != null && countIncludePad != 0L)
 			throw new UnsupportedOperationException(
